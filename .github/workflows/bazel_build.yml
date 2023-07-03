@@ -36,9 +36,9 @@ jobs:
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             echo "Windows build"
             bazel build @pydin//:pydin-zip \
-              --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} \
-              --action_env=INCLUDE=${{ env.INCLUDE }} \
-              --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
+              --action_env=BAZEL_VC="${{ env.VCINSTALLDIR }}" \
+              --action_env=INCLUDE="${{ env.INCLUDE }}" \
+              --action_env=BAZEL_VC_FULL_VERSION="${{ env.VCToolsVersion }}"
           else
             # Add commands for other OS types here
             echo "Non-Windows build"
