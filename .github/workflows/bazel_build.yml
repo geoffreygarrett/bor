@@ -107,20 +107,18 @@ jobs:
           ls "C:\Strawberry\perl\lib"
         shell: pwsh
 
-
       - name: Update PERL5LIB
         if: runner.os == 'Windows'
         run: |
           echo "PERL5LIB=C:/Strawberry/perl/site/lib:$PERL5LIB" >> $GITHUB_ENV
         shell: bash
-        env:
-          PERL5LIB: "C:/STRAB~1/perl/site/lib"
 
-      #          PERL5LIB: "C:\\STRAWB~1\\perl\\site\\lib"
+      #  brew install libomp
 
-      - name: Update PERL5LIB
-        if: runner.os == 'Windows'
-        run: echo "PERL5LIB=C:/Strawberry/perl/site/lib:$PERL5LIB" >> $GITHUB_ENV
+      - name: Install OMP (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install libomp
         shell: bash
 
       #      - name: Install Perl module Pod::Usage (Windows)
@@ -213,7 +211,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          bazel build @pydin//:pydin-tar
+          bazel build @pydin//:pydin-tar --config=unix
 
       - name: Extract Pydin version
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
