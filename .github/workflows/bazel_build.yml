@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest , macOS-latest ]
     #        include:
     #          - os: macOS-latest
     #            arch: arm64
@@ -52,10 +52,15 @@ jobs:
       - name: Install LLVM and Check Version (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install llvm
-          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
-          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
-          llvm-config --version || echo "LLVM might not be installed properly"
+          echo 'CC=$(brew --prefix llvm@15)/bin/clang' >> $GITHUB_ENV
+          echo 'CXX=$(brew --prefix llvm@15)/bin/clang++' >> $GITHUB_ENV
+        
+
+        #          brew install llvm
+        #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+        #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+        #          llvm-config --version || echo "LLVM might not be installed properly"
+
         shell: bash
 
 
@@ -243,7 +248,16 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          bazel build @pydin//:pydin-tar --config=unix
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
+            bazel build @pydin//:pydin-tar --config=unix
+          elif [[ "${RUNNER_OS}" == "macOS" ]]; then
+            bazel build @pydin//:pydin-tar \
+                --config=unix \
+                --action_env=CC=${{ env.CC }} \
+                --action_env=CXX=${{ env.CXX }} \
+          fi
+
+
 
       - name: Extract Pydin version
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
