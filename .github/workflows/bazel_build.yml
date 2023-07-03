@@ -15,6 +15,7 @@ jobs:
         include:
           - os: macOS-latest
             arch: arm64
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -53,9 +54,11 @@ jobs:
       - name: List files
         run: ls -l bazel-bin/external/pydin/
 
-      - name: Convert runner.os to lowercase
+      - name: lowercase runner.os
         run: |
-          echo "RUNNER_OS=${{ runner.os }} | tr '[:upper:]' '[:lower:]'" >> $GITHUB_ENV
+          echo "RUNNER_OS=${RUNNER_OS,,}" >> $GITHUB_ENV
+        env:
+          RUNNER_OS: ${{ runner.os }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
