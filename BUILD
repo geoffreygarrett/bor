@@ -53,15 +53,29 @@ cc_library(
     hdrs = [
         ":odin_headers",
     ],
-    copts = [
-        "-std=c++20",
-    ],
     includes = ["include"],
     visibility = ["//visibility:public"],
     deps = [
         ":cereal",
         ":eigen",
     ],
+)
+
+platform(
+    name = "x64_windows-clang-cl",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+        "@bazel_tools//tools/cpp:clang-cl",
+    ],
+)
+
+register_execution_platforms(
+    ":x64_windows-clang-cl",
+)
+
+register_toolchains(
+    "@local_config_cc//:cc-toolchain-x64_windows-clang-cl",
 )
 
 # Configuration settings
