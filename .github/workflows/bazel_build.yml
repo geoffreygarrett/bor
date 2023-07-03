@@ -75,6 +75,13 @@ jobs:
           which lib
           which ml64
 
+      - name: Prepare Bazel for Windows
+        if: runner.os == 'Windows'
+        run: |
+          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+          mv bazel-vs2022.exe bazel.exe
+          echo "PATH=$PATH:$(pwd)" >> $GITHUB_ENV
+        shell: bash
 
       - name: Build Bazel Target
         env:
@@ -82,13 +89,11 @@ jobs:
         shell: bash
         run: |
           if [[ "${RUNNER_OS}" == "Windows" ]]; then
-            echo "Windows build"
             bazel build @pydin//:pydin-zip 
               --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }}
               --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
           else
             # Add commands for other OS types here
-            echo "Non-Windows build"
             bazel build @pydin//:pydin-tar
           fi
 
