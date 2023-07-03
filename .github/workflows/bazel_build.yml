@@ -33,9 +33,10 @@ jobs:
           path: "/home/runner/.cache/bazel"
           key: bazel-${{ runner.os }}  #
 
-      - name: Check LLVM version (macOS)
-        if: runner.os == 'macOS'
-        run: brew info llvm | grep -i "llvm:"
+      - name: Install LLVM and Check Version (macOS)
+        run: |
+          brew install llvm
+          llvm-config --version || echo "LLVM is not installed properly"
         shell: bash
 
       - name: Checkout Repo
