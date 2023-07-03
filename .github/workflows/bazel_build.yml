@@ -136,16 +136,10 @@ jobs:
       - name: Update PERL5LIB
         if: runner.os == 'Windows'
         run: |
-          echo "PERL5LIB=C:/Strawberry/perl/site/lib:$PERL5LIB" >> $GITHUB_ENV
+          echo "PERL5LIB=C:/Strawberry/perl/site/lib;C:/Strawberry/perl/site/lib/Pod;C:/Strawberry/perl/vendor/lib;C:/Strawberry/perl/vendor/lib/Pod;$PERL5LIB" >> $GITHUB_ENV
         shell: bash
 
       #  brew install libomp
-
-      - name: Install OMP (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install libomp
-        shell: bash
 
       #      - name: Install Perl module Pod::Usage (Windows)
       #        if: runner.os == 'Windows'
