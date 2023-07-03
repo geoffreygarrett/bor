@@ -17,16 +17,27 @@ jobs:
             arch: arm64
 
     steps:
+      # Caches and restores the bazelisk download directory, the bazel build directory.
+      - name: Cache bazel
+        uses: actions/cache@v3
+        env:
+          cache-name: bazel-cache
+        with:
+          path: |
+            ~/.cache/bazelisk
+            ~/.cache/bazel
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: Mount bazel cache
-        uses: actions/cache@v3
-        with:
-          path: "/home/runner/.cache/bazel"
-          key: bazel
+      #      - name: Mount bazel cache
+      #        uses: actions/cache@v3
+      #        with:
+      #          path: "/home/runner/.cache/bazel"
+      #          key: bazel
 
       - name: Setup MSVC
         if: runner.os == 'Windows'
@@ -97,7 +108,7 @@ jobs:
         shell: pwsh
 
       - name: Debug Perl
-        if: runner.os != 'Windows'
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           perl -E 'say for @INC'
