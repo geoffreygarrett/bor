@@ -107,12 +107,12 @@ jobs:
           cpan Pod::Usage
         shell: pwsh
 
-      - name: Debug Perl
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          perl -E 'say for @INC'
-          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
+#      - name: Debug Perl
+#        if: runner.os == 'Windows'
+#        shell: pwsh
+#        run: |
+#          perl -E 'say for @INC'
+#          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
 
       #      - name: Prepare Bazel (Windows)
       #        if: runner.os == 'Windows'
