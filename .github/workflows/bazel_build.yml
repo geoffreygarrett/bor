@@ -18,15 +18,20 @@ jobs:
 
     steps:
       # Caches and restores the bazelisk download directory, the bazel build directory.
-      - name: Cache bazel
+      #      - name: Cache bazel
+      #        uses: actions/cache@v2
+      #        env:
+      #          cache-name: bazel-cache
+      #        with:
+      #          path: |
+      #            /home/runner/.cache/bazel
+      #            /home/runner/.cache/bazelisk
+      #          key: ${{ runner.os }}-${{ env.cache-name }}
+      - name: Mount bazel cache
         uses: actions/cache@v2
-        env:
-          cache-name: bazel-cache
         with:
-          path: |
-            /home/runner/.cache/bazel
-            /home/runner/.cache/bazelisk
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          path: "/home/runner/.cache/bazel"
+          key: bazel
 
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -92,22 +97,28 @@ jobs:
           which lib
           which ml64
 
-      #      - name: Install Perl module Pod::Usage (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          echo "Adding Perl paths to bash"
-      #          export PATH="$PATH:/usr/share/perl5/site_perl:/usr/lib/perl5/vendor_perl"
-      #          echo "PATH is now $PATH"
-      #          cpan Pod::Usage
-      #        shell: bash
+      - name: Install Perl module Pod::Usage (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cpan Pod::Usage
+          ls "C:\STRAWB~1\perl\site\lib\Pod"
+          ls "C:\STRAWB~1\perl\lib"
+          ls "C:\Strawberry\perl\site\lib\Pod"
+          ls "C:\Strawberry\perl\lib"
+        shell: pwsh
+        env:
+          PERL5LIB: "C:\STRAWB~1\perl\site\lib"
 
-      #      - name: Install Perl module Pod::Usage (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          cpan Pod::Usage
-      #        shell: pwsh
-      #        env:
-      #          PERL5LIB: "C:\STRAWB~1\perl\site\lib"
+      - name: Update PERL5LIB
+        if: runner.os == 'Windows'
+        run: |
+          echo "PERL5LIB=C:/Strawberry/perl/site/lib:$PERL5LIB" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Update PERL5LIB
+        if: runner.os == 'Windows'
+        run: echo "PERL5LIB=C:/Strawberry/perl/site/lib:$PERL5LIB" >> $GITHUB_ENV
+        shell: bash
 
       #      - name: Install Perl module Pod::Usage (Windows)
       #        if: runner.os == 'Windows'
@@ -164,22 +175,22 @@ jobs:
       #            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
       #            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
 
-      - name: Setup PkgConfig (Windows)
-        if: runner.os == 'Windows'
-        env:
-          PKG_CONFIG_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip"
-          GETTEXT_RUNTIME_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip"
-          GLIB_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip"
-        run: |
-          curl -LO "${{ env.PKG_CONFIG_ZIP }}"
-          7z x pkg-config_0.26-1_win32.zip -oC:\MinGW\bin pkg-config.exe
-          curl -LO "${{ env.GETTEXT_RUNTIME_ZIP }}"
-          7z x gettext-runtime_0.18.1.1-2_win32.zip -oC:\MinGW\bin intl.dll
-          curl -LO "${{ env.GLIB_ZIP }}"
-          7z x glib_2.28.8-1_win32.zip -oC:\MinGW\bin libglib-2.0-0.dll
-          echo "C:\MinGW\bin" >> $GITHUB_PATH
-          echo "PKG_CONFIG_EXECUTABLE=C:\MinGW\bin\pkg-config.exe" >> $GITHUB_ENV
-        shell: pwsh
+      #      - name: Setup PkgConfig (Windows)
+      #        if: runner.os == 'Windows'
+      #        env:
+      #          PKG_CONFIG_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip"
+      #          GETTEXT_RUNTIME_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip"
+      #          GLIB_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip"
+      #        run: |
+      #          curl -LO "${{ env.PKG_CONFIG_ZIP }}"
+      #          7z x pkg-config_0.26-1_win32.zip -oC:\MinGW\bin pkg-config.exe
+      #          curl -LO "${{ env.GETTEXT_RUNTIME_ZIP }}"
+      #          7z x gettext-runtime_0.18.1.1-2_win32.zip -oC:\MinGW\bin intl.dll
+      #          curl -LO "${{ env.GLIB_ZIP }}"
+      #          7z x glib_2.28.8-1_win32.zip -oC:\MinGW\bin libglib-2.0-0.dll
+      #          echo "C:\MinGW\bin" >> $GITHUB_PATH
+      #          echo "PKG_CONFIG_EXECUTABLE=C:\MinGW\bin\pkg-config.exe" >> $GITHUB_ENV
+      #        shell: pwsh
 
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
