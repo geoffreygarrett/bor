@@ -118,6 +118,11 @@ jobs:
           which perl
         shell: bash
 
+      - name: Update PATH
+        run: |
+          echo "PATH=C:/Strawberry/perl/bin:$PATH" >> $GITHUB_ENV
+        shell: bash
+
       - name: Install Perl module Pod::Usage (Windows)
         if: runner.os == 'Windows'
         run: |
