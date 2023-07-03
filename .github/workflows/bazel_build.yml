@@ -113,7 +113,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cpan Pod::Usage
-          echo "PERL5LIB=$(perl -V:installsitelib | cut -d"'" -f2)" >> $GITHUB_ENV
+          echo "PERL5LIB=$(perl -V:installsitelib | %{$_ -replace '.*=\'(.*)\'.*', '$1'})" >> $GITHUB_ENV
         shell: pwsh
 
       #      - name: Debug Perl
@@ -174,7 +174,6 @@ jobs:
             --action_env=BAZEL_VC=$BAZEL_VC `
             --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
             --action_env=PERL5LIB=$PERL5LIB
-
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
