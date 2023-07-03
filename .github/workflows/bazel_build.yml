@@ -75,11 +75,28 @@ jobs:
           which lib
           which ml64
 
-      - name: Install PkgConfig (Windows)
+      - name: Setup PkgConfig (Windows)
         if: runner.os == 'Windows'
+        env:
+          PKG_CONFIG_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip"
+          GETTEXT_RUNTIME_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip"
+          GLIB_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip"
         run: |
-          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" upgrade --no-dry-run --debug
-          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" install pkgconf
+          curl -LO "${PKG_CONFIG_ZIP}"
+          7z x pkg-config_0.26-1_win32.zip -oC:\MinGW\bin pkg-config.exe
+          curl -LO "${GETTEXT_RUNTIME_ZIP}"
+          7z x gettext-runtime_0.18.1.1-2_win32.zip -oC:\MinGW\bin intl.dll
+          curl -LO "${GLIB_ZIP}"
+          7z x glib_2.28.8-1_win32.zip -oC:\MinGW\bin libglib-2.0-0.dll
+          echo "C:\MinGW\bin" >> $GITHUB_PATH
+      
+
+      #
+      #      - name: Install PkgConfig (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" upgrade --no-dry-run --debug
+      #          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" install pkgconf
 
       - name: Prepare Bazel for Windows
         if: runner.os == 'Windows'
