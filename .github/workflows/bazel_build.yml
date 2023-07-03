@@ -22,6 +22,12 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Mount bazel cache
+        uses: actions/cache@v3
+        with:
+          path: "/home/runner/.cache/bazel"
+          key: bazel
+
       - name: Setup MSVC
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.12.1
@@ -75,17 +81,17 @@ jobs:
           which lib
           which ml64
 
-      #      - name: Install Perl module Pod::Usage (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          cpan Pod::Usage
-      #        shell: bash
+      - name: Install Perl module Pod::Usage (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cpan Pod::Usage
+        shell: bash
 
-      #      - name: Debug Perl
-      #        shell: bash
-      #        run: |
-      #          perl -E 'say for @INC'
-      #          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
+      - name: Debug Perl
+        shell: bash
+        run: |
+          perl -E 'say for @INC'
+          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
 
 #      - name: Prepare Bazel (Windows)
 #        if: runner.os == 'Windows'
