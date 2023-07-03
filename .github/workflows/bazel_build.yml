@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "/home/runner/.cache/bazel"
-          key: bazel-${{ runner.os }  #}-${{ hashFiles('**/WORKSPACE.bazel') }}
+          key: bazel-${{ runner.os }}  #
 
       - name: Check LLVM version (macOS)
         if: runner.os == 'macOS'
