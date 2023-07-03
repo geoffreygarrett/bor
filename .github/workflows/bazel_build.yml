@@ -29,9 +29,17 @@ jobs:
           vsversion: 2019
           toolset: 14.XX
 
+      - name: List MSVC dirs
+        if: ${{ runner.os }} == 'Windows'
+        run: |
+          ls -l "${{ env.VCPKG_ROOT }}"
+          ls -l "${{ env.VCINSTALLDIR }}"
+          ls -l "${{ env.VCToolsInstallDir }}"
+
+
       - name: Get bazel cache directory path
         id: bazel-cache-dir-path
-        run: echo "::set-output name=dir::~/.cache/bazel"
+        run: echo "dir=~/.cache/bazel" >> $GITHUB_OUTPUT
 
       - name: Cache bazel modules
         id: cache-bazel
