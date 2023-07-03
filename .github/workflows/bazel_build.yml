@@ -114,15 +114,29 @@ jobs:
 #          bazel-vs2022 build @pydin//:pydin-zip `
 #            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
 #            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
+
+#      - name: Build Bazel Target (Windows)
+#        if: runner.os == 'Windows'
+#        shell: pwsh
+#        run: |
+#          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+#          $env:PATH += ";$pwd"
+#          ./bazel-vs2022 build @pydin//:pydin-zip `
+#            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
+#            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
+
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
           $env:PATH += ";$pwd"
+          $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
+          $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
           ./bazel-vs2022 build @pydin//:pydin-zip `
-            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
-            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
+            --action_env=BAZEL_VC=$BAZEL_VC `
+            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION
+
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
