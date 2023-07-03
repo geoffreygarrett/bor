@@ -25,13 +25,13 @@ jobs:
           path: "~/.cache/bazel"
           key: bazel
       - name: Build Bazel Target
-        run: bazel build //:pydin-tar
+        run: bazel build @pydin//:pydin-tar
         shell: bash
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: pydin-tar
-          path: bazel-bin/pydin-tar.tar.gz  # Replace this with the actual path of your built artifact.
+          path: bazel-bin/external/pydin/pydin.tar  # Replace this with the actual path of your built artifact.
       - name: Setup QEMU
         if: matrix.arch == 'arm64'
         uses: docker/setup-qemu-action@v1
@@ -48,4 +48,4 @@ jobs:
           push: false
       - name: Run Docker Image
         if: matrix.arch == 'arm64'
-        run: docker run -v $(pwd):/app -w /app <Your GitHub username>/<Your repository name>:latest bazel build //:pydin-tar
+        run: docker run -v $(pwd):/app -w /app geoffreygarrett/bor:latest bazel build @pydin//:pydin-tar
