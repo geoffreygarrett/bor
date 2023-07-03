@@ -34,6 +34,7 @@ jobs:
           key: bazel-${{ runner.os }}  #
 
       - name: Install LLVM and Check Version (macOS)
+        if: runner.os == 'macOS'
         run: |
           brew install llvm
           llvm-config --version || echo "LLVM is not installed properly"
