@@ -24,8 +24,8 @@ jobs:
           cache-name: bazel-cache
         with:
           path: |
-            ~/.cache/bazelisk
-            ~/.cache/bazel
+            /home/runner/.cache/bazel
+            /home/runner/.cache/bazel
           key: ${{ runner.os }}-${{ env.cache-name }}
 
       - name: Checkout Repo
@@ -101,18 +101,27 @@ jobs:
       #          cpan Pod::Usage
       #        shell: bash
 
+#      - name: Install Perl module Pod::Usage (Windows)
+#        if: runner.os == 'Windows'
+#        run: |
+#          cpan Pod::Usage
+#        shell: pwsh
+#        env:
+#          PERL5LIB: "C:\STRAWB~1\perl\site\lib"
+
       - name: Install Perl module Pod::Usage (Windows)
         if: runner.os == 'Windows'
         run: |
           cpan Pod::Usage
+          echo "PERL5LIB=$(perl -V:installsitelib | cut -d"'" -f2)" >> $GITHUB_ENV
         shell: pwsh
 
-#      - name: Debug Perl
-#        if: runner.os == 'Windows'
-#        shell: pwsh
-#        run: |
-#          perl -E 'say for @INC'
-#          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
+      #      - name: Debug Perl
+      #        if: runner.os == 'Windows'
+      #        shell: pwsh
+      #        run: |
+      #          perl -E 'say for @INC'
+      #          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
 
       #      - name: Prepare Bazel (Windows)
       #        if: runner.os == 'Windows'
