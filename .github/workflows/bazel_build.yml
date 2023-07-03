@@ -67,13 +67,18 @@ jobs:
       #        run: ls ~/.cache/bazel
 
 
-      - name: Find MSVC tools
+      - name: Find MSVC tools (Windows)
         if: runner.os == 'Windows'
         run: |
           which cl
           which link
           which lib
           which ml64
+
+      - name: Install PkgConfig (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          vcpkg install pkg-config
 
       - name: Prepare Bazel for Windows
         if: runner.os == 'Windows'
