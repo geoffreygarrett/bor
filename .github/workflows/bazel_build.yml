@@ -189,11 +189,11 @@ jobs:
           $env:PATH += ";$pwd"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
           $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
-          $PKG_CONFIG_EXECUTABLE = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
+          $PKG_CONFIG = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
           ./bazel-vs2022 build @pydin//:pydin-zip `
             --action_env=BAZEL_VC=$BAZEL_VC `
             --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
-            --action_env=PKG_CONFIG_EXECUTABLE=$PKG_CONFIG_EXECUTABLE `
+            --action_env=PKG_CONFIG=$PKG_CONFIG `
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
