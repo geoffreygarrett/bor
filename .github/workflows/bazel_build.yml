@@ -109,15 +109,15 @@ jobs:
       #        env:
       #          PERL5LIB: "C:\STRAWB~1\perl\site\lib"
 
-      - name: Install Perl module Pod::Usage (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          cpan Pod::Usage
-          $output = perl -V:installsitelib
-          $output -match "'.*'"
-          $PERL5LIB = $matches[0] -replace "'"
-          echo "PERL5LIB=$PERL5LIB" >> $GITHUB_ENV
-        shell: pwsh
+      #      - name: Install Perl module Pod::Usage (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          cpan Pod::Usage
+      #          $output = perl -V:installsitelib
+      #          $output -match "'.*'"
+      #          $PERL5LIB = $matches[0] -replace "'"
+      #          echo "PERL5LIB=$PERL5LIB" >> $GITHUB_ENV
+      #        shell: pwsh
 
       #      - name: Debug Perl
       #        if: runner.os == 'Windows'
@@ -164,6 +164,23 @@ jobs:
       #            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
       #            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
 
+      - name: Setup PkgConfig (Windows)
+        if: runner.os == 'Windows'
+        env:
+          PKG_CONFIG_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip"
+          GETTEXT_RUNTIME_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip"
+          GLIB_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip"
+        run: |
+          curl -LO "${{ env.PKG_CONFIG_ZIP }}"
+          7z x pkg-config_0.26-1_win32.zip -oC:\MinGW\bin pkg-config.exe
+          curl -LO "${{ env.GETTEXT_RUNTIME_ZIP }}"
+          7z x gettext-runtime_0.18.1.1-2_win32.zip -oC:\MinGW\bin intl.dll
+          curl -LO "${{ env.GLIB_ZIP }}"
+          7z x glib_2.28.8-1_win32.zip -oC:\MinGW\bin libglib-2.0-0.dll
+          echo "C:\MinGW\bin" >> $GITHUB_PATH
+          echo "PKG_CONFIG_EXECUTABLE=C:\MinGW\bin\pkg-config.exe" >> $GITHUB_ENV
+        shell: pwsh
+
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -172,11 +189,11 @@ jobs:
           $env:PATH += ";$pwd"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
           $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
-          $PERL5LIB = "${{ env.PERL5LIB }}".replace('\', '/')
+          $PKG_CONFIG_EXECUTABLE = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
           ./bazel-vs2022 build @pydin//:pydin-zip `
             --action_env=BAZEL_VC=$BAZEL_VC `
             --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
-            --action_env=PERL5LIB=$PERL5LIB
+            --action_env=PKG_CONFIG_EXECUTABLE=$PKG_CONFIG_EXECUTABLE `
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
