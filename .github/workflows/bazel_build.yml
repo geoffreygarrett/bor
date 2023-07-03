@@ -75,24 +75,24 @@ jobs:
           which lib
           which ml64
 
-#      - name: Install Perl module Pod::Usage (Windows)
+      #      - name: Install Perl module Pod::Usage (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          cpan Pod::Usage
+      #        shell: bash
+
+      #      - name: Debug Perl
+      #        shell: bash
+      #        run: |
+      #          perl -E 'say for @INC'
+      #          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
+
+#      - name: Prepare Bazel (Windows)
 #        if: runner.os == 'Windows'
 #        run: |
-#          cpan Pod::Usage
+#          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+#          echo "PATH=$PATH:$(pwd)" >> $GITHUB_ENV
 #        shell: bash
-
-#      - name: Debug Perl
-#        shell: bash
-#        run: |
-#          perl -E 'say for @INC'
-#          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
-
-      - name: Prepare Bazel (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-          echo "PATH=$PATH:$(pwd)" >> $GITHUB_ENV
-        shell: bash
 
       #      - name: Build Bazel Target
       #        env:
@@ -107,11 +107,20 @@ jobs:
       #            # Add commands for other OS types here
       #            bazel build @pydin//:pydin-tar
       #          fi
+#      - name: Build Bazel Target (Windows)
+#        if: runner.os == 'Windows'
+#        shell: pwsh
+#        run: |
+#          bazel-vs2022 build @pydin//:pydin-zip `
+#            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
+#            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          bazel-vs2022 build @pydin//:pydin-zip `
+          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+          $env:PATH += ";$pwd"
+          ./bazel-vs2022 build @pydin//:pydin-zip `
             --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
             --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
 
@@ -126,6 +135,7 @@ jobs:
       - name: Print Pydin version
         run: |
           echo "pydin version: $PYDIN_VERSION"
+
       - name: List files
         run: ls -l bazel-bin/external/pydin/
 
