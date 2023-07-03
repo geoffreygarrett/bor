@@ -40,7 +40,7 @@ jobs:
       - name: Build Bazel Target
         run: |
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            bazel build @pydin//:pydin-zip
+            bazel build @pydin//:pydin-zip --action_env=BAZEL_VC_FULL_VERSION --action_env=BAZEL_VC --action_env=INCLUDE
           else
             bazel build @pydin//:pydin-tar
           fi
@@ -52,13 +52,19 @@ jobs:
           echo "pydin version: $PYDIN_VERSION"
       - name: List files
         run: ls -l bazel-bin/external/pydin/
+
+      - name: Convert runner.os to lowercase
+        run: |
+          echo "RUNNER_OS=${{ runner.os }} | tr '[:upper:]' '[:lower:]'" >> $GITHUB_ENV
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pydin-${{ runner.os | toLower() }}-${{ env.PYDIN_VERSION }}-build${{ github.run_number }}
+          name: pydin-${{ env.RUNNER_OS }}-${{ env.PYDIN_VERSION }}-build${{ github.run_number }}
           path: |
             bazel-bin/external/pydin/pydin.tar.gz
             bazel-bin/external/pydin/pydin.zip
+
       - name: Setup QEMU
         if: matrix.arch == 'arm64'
         uses: docker/setup-qemu-action@v1
