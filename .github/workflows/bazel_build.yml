@@ -113,7 +113,10 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cpan Pod::Usage
-          echo "PERL5LIB=$(perl -V:installsitelib | %{$_ -replace '.*=\'(.*)\'.*', '$1'})" >> $GITHUB_ENV
+          $output = perl -V:installsitelib
+          $output -match "'.*'"
+          $PERL5LIB = $matches[0] -replace "'"
+          echo "PERL5LIB=$PERL5LIB" >> $GITHUB_ENV
         shell: pwsh
 
       #      - name: Debug Perl
