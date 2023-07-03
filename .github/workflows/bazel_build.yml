@@ -261,3 +261,6 @@ jobs:
         if: matrix.arch == 'arm64'
         run: docker run -v $(pwd):/app -w /app geoffreygarrett/bor:latest bazel build @pydin//:pydin-tar
 
+      - name: Adjust permissions for Bazel cache
+        run: chmod -R 777 "/home/runner/.cache/bazel"
+        shell: bash
