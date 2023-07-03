@@ -1,0 +1,40 @@
+bazel_dep(name = "odin", version = "0.1.0")
+local_path_override(module_name = "odin", path = "./odin")
+
+bazel_dep(name = "pydin", version = "0.1.0")
+local_path_override(module_name = "pydin", path = "./pydin")
+
+bazel_dep(name = "rules_pkg", version = "0.9.1")
+#bazel_dep(name = "rules_python", version = "0.23.1")
+
+# RULES PYTHON ##########################################################
+bazel_dep(name = "rules_python", version = "0.23.1")
+# https://github.com/bazelbuild/rules_python/blob/main/examples/bzlmod/MODULE.bazel
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    name = "pip",
+    requirements_lock = "//:pydin/requirements_lock.txt",
+)
+use_repo(pip, "pip")
+
+#python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+#python.toolchain(
+#    name = "python_3_9",
+#    toolchain_type = "host",
+#    toolchain = "@rules_python//toolchains/python:3.9",
+#)
+#
+#interpreter = use_extension("@rules_python//python/extensions:interpreter.bzl", "interpreter")
+#interpreter.install(
+#    name = "interpreter",
+#    python_name = "python_3_9",
+#)
+#use_repo(interpreter, "interpreter")
+
+#pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+#pip.parse(
+#    name = "pip",
+#    requirements_lock = "//:requirements_lock.txt",
+#)
+#use_repo(pip, "pip")

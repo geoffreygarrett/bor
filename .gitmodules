@@ -1,0 +1,9 @@
+[submodule "pydin"]
+	path = pydin
+	url = ./pydin
+[submodule "odin"]
+	path = odin
+	url = ./odin
+[submodule "gtoc12"]
+	path = gtoc12
+	url = ./gtoc12
