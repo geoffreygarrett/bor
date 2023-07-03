@@ -1,16 +1,21 @@
 # .bazelrc
 
 # These options are effective in all Bazel commands executed in this workspace.
+common --enable_platform_specific_config
+# The above option results in --config=linux,macos, or --config=windows automatically.
 
-# Set the C++ language version to C++20.
-build --cxxopt=-std=c++20
+# Set the C++ language version to C++20 for GCC/Clang.
+build:linux --cxxopt=-std=c++20
+build:macos --cxxopt=-std=c++20
+
+# Set the C++ language version to C++20 for MSVC.
+build:windows --cxxopt=/std:c++20
 
 # Specifies the number of concurrent jobs that Bazel will try to execute.
 build --jobs=20
 
 # Building with optimization and verbose on failures.
 build -c opt --verbose_failures
-
 
 # Set test output to be streamed directly to the console.
 test --test_output=all

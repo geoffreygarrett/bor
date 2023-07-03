@@ -75,53 +75,51 @@ jobs:
           which lib
           which ml64
 
-#      - name: Setup PkgConfig (Windows)
-#        if: runner.os == 'Windows'
-#        env:
-#          PKG_CONFIG_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip"
-#          GETTEXT_RUNTIME_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip"
-#          GLIB_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip"
-#        run: |
-#          curl -LO "${{ env.PKG_CONFIG_ZIP }}"
-#          7z x pkg-config_0.26-1_win32.zip -oC:\MinGW\bin pkg-config.exe
-#          curl -LO "${{ env.GETTEXT_RUNTIME_ZIP }}"
-#          7z x gettext-runtime_0.18.1.1-2_win32.zip -oC:\MinGW\bin intl.dll
-#          curl -LO "${{ env.GLIB_ZIP }}"
-#          7z x glib_2.28.8-1_win32.zip -oC:\MinGW\bin libglib-2.0-0.dll
-#          echo "C:\MinGW\bin" >> $GITHUB_PATH
-          
-      - name: Install Perl modules
+      - name: Install Perl module Pod::Usage (Windows)
         if: runner.os == 'Windows'
         run: |
           cpan Pod::Usage
+        shell: bash
 
-      #
-      #      - name: Install PkgConfig (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" upgrade --no-dry-run --debug
-      #          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" install pkgconf
+      - name: Debug Perl
+        shell: bash
+        run: |
+          perl -E 'say for @INC'
+          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
 
-      - name: Prepare Bazel for Windows
+      - name: Prepare Bazel (Windows)
         if: runner.os == 'Windows'
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
           echo "PATH=$PATH:$(pwd)" >> $GITHUB_ENV
         shell: bash
 
-      - name: Build Bazel Target
-        env:
-          RUNNER_OS: ${{ runner.os }}
+      #      - name: Build Bazel Target
+      #        env:
+      #          RUNNER_OS: ${{ runner.os }}
+      #        shell: bash
+      #        run: |
+      #          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+      #            bazel-vs2022 build @pydin//:pydin-zip
+      #              --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }}
+      #              --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
+      #          else
+      #            # Add commands for other OS types here
+      #            bazel build @pydin//:pydin-tar
+      #          fi
+      - name: Build Bazel Target (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          bazel-vs2022 build @pydin//:pydin-zip `
+            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
+            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
+
+      - name: Build Bazel Target (Unix)
+        if: runner.os != 'Windows'
         shell: bash
         run: |
-          if [[ "${RUNNER_OS}" == "Windows" ]]; then
-            bazel-vs2022 build @pydin//:pydin-zip 
-              --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }}
-              --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
-          else
-            # Add commands for other OS types here
-            bazel build @pydin//:pydin-tar
-          fi
+          bazel build @pydin//:pydin-tar
 
       - name: Extract Pydin version
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
