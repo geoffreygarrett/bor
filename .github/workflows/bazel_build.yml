@@ -20,6 +20,11 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+
+      - name: Setup MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1.12.1
+
       - name: Setup Bazelisk
         uses: bazelbuild/setup-bazelisk@v2
       - name: Mount bazel cache  # Optional
@@ -28,13 +33,22 @@ jobs:
           path: "~/.cache/bazel"
           key: bazel
       - name: Build Bazel Target
-        run: bazel build @pydin//:pydin-tar
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            bazel build @pydin//:pydin-zip
+          else
+            bazel build @pydin//:pydin-tar
+          fi
         shell: bash
+      - name: Extract Pydin version
+        run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pydin-tar
-          path: bazel-bin/external/pydin/pydin.tar  # Replace this with the actual path of your built artifact.
+          name: pydin-${{ runner.os }}-${{ env.PYDIN_VERSION }}-build${{ github.run_number }}
+          path: |
+            bazel-bin/external/pydin/pydin.tar
+            bazel-bin/external/pydin/pydin.zip
       - name: Setup QEMU
         if: matrix.arch == 'arm64'
         uses: docker/setup-qemu-action@v1
@@ -52,3 +66,4 @@ jobs:
       - name: Run Docker Image
         if: matrix.arch == 'arm64'
         run: docker run -v $(pwd):/app -w /app geoffreygarrett/bor:latest bazel build @pydin//:pydin-tar
+
