@@ -38,27 +38,27 @@ jobs:
           ls -l "${{ env.VCToolsInstallDir }}/bin"
 
 
-      - name: Get bazel cache directory path
-        id: bazel-cache-dir-path
-        run: echo "dir=~/.cache/bazel" >> $GITHUB_OUTPUT
+#      - name: Get bazel cache directory path
+#        id: bazel-cache-dir-path
+#        run: echo "dir=~/.cache/bazel" >> $GITHUB_OUTPUT
+#
+#      - name: Cache bazel modules
+#        id: cache-bazel
+#        uses: actions/cache@v3
+#        env:
+#          cache-name: cache-bazel-modules
+#        with:
+#          path: ${{ steps.bazel-cache-dir-path.outputs.dir }}
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/WORKSPACE.bazel') }}
+#          restore-keys: |
+#            ${{ runner.os }}-build-${{ env.cache-name }}-
+#            ${{ runner.os }}-build-
+#            ${{ runner.os }}-
 
-      - name: Cache bazel modules
-        id: cache-bazel
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-bazel-modules
-        with:
-          path: ${{ steps.bazel-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/WORKSPACE.bazel') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: List the state of bazel cache
-        if: steps.cache-bazel.outputs.cache-hit != 'true'
-        continue-on-error: true
-        run: ls ~/.cache/bazel
+#      - name: List the state of bazel cache
+#        if: steps.cache-bazel.outputs.cache-hit != 'true'
+#        continue-on-error: true
+#        run: ls ~/.cache/bazel
 
       - name: Build Bazel Target
         env:
