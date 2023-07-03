@@ -75,11 +75,11 @@ jobs:
           which lib
           which ml64
 
-#      - name: Install PkgConfig (Windows)
-#        if: runner.os == 'Windows'
-#        run: |
-#          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" upgrade --no-dry-run --debug
-#          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" install pkg-config
+      - name: Install PkgConfig (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" upgrade --no-dry-run --debug
+          vcpkg --vcpkg-root "${{ env.VCPKG_ROOT }}" install pkgconf
 
       - name: Prepare Bazel for Windows
         if: runner.os == 'Windows'
