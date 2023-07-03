@@ -81,14 +81,14 @@ jobs:
           which lib
           which ml64
 
-      - name: Install Perl module Pod::Usage (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "Adding Perl paths to bash"
-          export PATH="$PATH:/usr/share/perl5/site_perl:/usr/lib/perl5/vendor_perl"
-          echo "PATH is now $PATH"
-          cpan Pod::Usage
-        shell: bash
+#      - name: Install Perl module Pod::Usage (Windows)
+#        if: runner.os == 'Windows'
+#        run: |
+#          echo "Adding Perl paths to bash"
+#          export PATH="$PATH:/usr/share/perl5/site_perl:/usr/lib/perl5/vendor_perl"
+#          echo "PATH is now $PATH"
+#          cpan Pod::Usage
+#        shell: bash
 
       - name: Install Perl module Pod::Usage (Windows)
         if: runner.os == 'Windows'
@@ -97,7 +97,7 @@ jobs:
         shell: pwsh
 
       - name: Debug Perl
-        shell: bash
+        shell: pwsh
         run: |
           perl -E 'say for @INC'
           perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
