@@ -13,9 +13,9 @@ jobs:
       matrix:
 #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
         os: [ ubuntu-latest ]
-        include:
-          - os: macOS-latest
-            arch: arm64
+#        include:
+#          - os: macOS-latest
+#            arch: arm64
 
     steps:
       # Caches and restores the bazelisk download directory, the bazel build directory.
