@@ -1,7 +1,7 @@
 [submodule "pydin"]
 	path = pydin
-	url = ./pydin
+	url = git@github.com:geoffreygarrett/pydin.git
 [submodule "odin"]
 	path = odin
-	url = ./odin
+	url = git@github.com:geoffreygarrett/odin.git
 
