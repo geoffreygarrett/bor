@@ -101,13 +101,13 @@ jobs:
       #          cpan Pod::Usage
       #        shell: bash
 
-#      - name: Install Perl module Pod::Usage (Windows)
-#        if: runner.os == 'Windows'
-#        run: |
-#          cpan Pod::Usage
-#        shell: pwsh
-#        env:
-#          PERL5LIB: "C:\STRAWB~1\perl\site\lib"
+      #      - name: Install Perl module Pod::Usage (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          cpan Pod::Usage
+      #        shell: pwsh
+      #        env:
+      #          PERL5LIB: "C:\STRAWB~1\perl\site\lib"
 
       - name: Install Perl module Pod::Usage (Windows)
         if: runner.os == 'Windows'
@@ -169,9 +169,11 @@ jobs:
           $env:PATH += ";$pwd"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
           $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
+          $PERL5LIB = "${{ env.PERL5LIB }}".replace('\', '/')
           ./bazel-vs2022 build @pydin//:pydin-zip `
             --action_env=BAZEL_VC=$BAZEL_VC `
-            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION
+            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
+            --action_env=PERL5LIB=$PERL5LIB
 
 
       - name: Build Bazel Target (Unix)
