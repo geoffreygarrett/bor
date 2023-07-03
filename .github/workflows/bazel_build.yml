@@ -37,7 +37,9 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install llvm
-          llvm-config --version || echo "LLVM is not installed properly"
+          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+          llvm-config --version || echo "LLVM might not be installed properly"
         shell: bash
 
       - name: Checkout Repo
