@@ -23,14 +23,14 @@ jobs:
           submodules: recursive
 
       - name: Setup MSVC
-        if: ${{ runner.os }} == 'Windows'
+        if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.12.1
         with:
           vsversion: 2019
           toolset: 14.XX
 
       - name: List MSVC dirs
-        if: ${{ runner.os }} == 'Windows'
+        if: runner.os == 'Windows'
         run: |
           ls -l "${{ env.VCPKG_ROOT }}"
           ls -l "${{ env.VCINSTALLDIR }}"
