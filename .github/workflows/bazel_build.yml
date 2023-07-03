@@ -1,0 +1,51 @@
+name: Build Bazel Targets
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macOS-latest ]
+        include:
+          - os: macOS-latest
+            arch: arm64
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Bazelisk
+        uses: bazelbuild/setup-bazelisk@v2
+      - name: Mount bazel cache  # Optional
+        uses: actions/cache@v3
+        with:
+          path: "~/.cache/bazel"
+          key: bazel
+      - name: Build Bazel Target
+        run: bazel build //:pydin-tar
+        shell: bash
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pydin-tar
+          path: bazel-bin/pydin-tar.tar.gz  # Replace this with the actual path of your built artifact.
+      - name: Setup QEMU
+        if: matrix.arch == 'arm64'
+        uses: docker/setup-qemu-action@v1
+      - name: Setup Docker Buildx
+        if: matrix.arch == 'arm64'
+        uses: docker/setup-buildx-action@v1
+      - name: Build Docker Image
+        if: matrix.arch == 'arm64'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/arm64
+          push: false
+      - name: Run Docker Image
+        if: matrix.arch == 'arm64'
+        run: docker run -v $(pwd):/app -w /app <Your GitHub username>/<Your repository name>:latest bazel build //:pydin-tar
