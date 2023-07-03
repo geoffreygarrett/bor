@@ -78,7 +78,8 @@ jobs:
       - name: Install PkgConfig (Windows)
         if: runner.os == 'Windows'
         run: |
-          vcpkg install pkg-config
+          vcpkg --vcpkg-root ${{ env.VCPKG_ROOT }} upgrade --no-dry-run --debug
+          vcpkg --vcpkg-root ${{ env.VCPKG_ROOT }} install pkg-config
 
       - name: Prepare Bazel for Windows
         if: runner.os == 'Windows'
