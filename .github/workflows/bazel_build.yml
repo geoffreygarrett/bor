@@ -40,8 +40,7 @@ jobs:
           path: |
             /home/runner/.cache/bazel
             /home/runner/.cache/bazelisk
-          key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/WORKSPACE.bazel'), hashFiles('**/BUILD.bazel'), hashFiles('./pydin/**/*.bzl'), hashFiles('./odin/**/*.bzl') }}
-
+          key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl') }}
 
       - name: Install LLVM and Check Version (macOS)
         if: runner.os == 'macOS'
