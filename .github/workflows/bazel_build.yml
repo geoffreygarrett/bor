@@ -19,9 +19,7 @@ jobs:
     steps:
       - name: lowercase runner.os
         run: |
-          echo "RUNNER_OS=${RUNNER_OS,,}" >> $GITHUB_ENV
-        env:
-          RUNNER_OS: ${{ runner.os }}
+          echo "RUNNER_OS_LOWER=${RUNNER_OS,,}" >> $GITHUB_ENV
 
       # Caches and restores the bazelisk download directory, the bazel build directory.
       - name: Cache bazel
@@ -32,7 +30,7 @@ jobs:
           path: |
             ~/.cache/bazelisk
             ~/.cache/bazel
-          key: ${{ env.RUNNER_OS }}-${{ env.cache-name }}
+          key: ${{ env.RUNNER_OS_LOWER }}-${{ env.cache-name }}
 
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -113,12 +111,12 @@ jobs:
           cpan Pod::Usage
         shell: pwsh
 
-#      - name: Debug Perl
-#        if: runner.os == 'Windows'
-#        shell: pwsh
-#        run: |
-#          perl -E 'say for @INC'
-#          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
+      #      - name: Debug Perl
+      #        if: runner.os == 'Windows'
+      #        shell: pwsh
+      #        run: |
+      #          perl -E 'say for @INC'
+      #          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
 
       #      - name: Prepare Bazel (Windows)
       #        if: runner.os == 'Windows'
@@ -189,7 +187,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pydin-${{ env.PYDIN_VERSION }}-${{ env.RUNNER_OS }}-build${{ github.run_number }}
+          name: pydin-${{ env.PYDIN_VERSION }}-${{ env.RUNNER_OS_LOWER }}-build${{ github.run_number }}
           path: |
             bazel-bin/external/pydin/pydin.tar.gz
             bazel-bin/external/pydin/pydin.zip
