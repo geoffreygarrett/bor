@@ -37,28 +37,44 @@ jobs:
           ls -l "${{ env.VCToolsInstallDir }}"
           ls -l "${{ env.VCToolsInstallDir }}/bin"
 
+      #  Visual C++ build tools seems to be installed at C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC
+      #But Bazel can't find the following tools:
+      #  VCVARSALL.BAT, cl.exe, link.exe, lib.exe, ml64.exe
+      #  for x64 target architecture
 
-#      - name: Get bazel cache directory path
-#        id: bazel-cache-dir-path
-#        run: echo "dir=~/.cache/bazel" >> $GITHUB_OUTPUT
-#
-#      - name: Cache bazel modules
-#        id: cache-bazel
-#        uses: actions/cache@v3
-#        env:
-#          cache-name: cache-bazel-modules
-#        with:
-#          path: ${{ steps.bazel-cache-dir-path.outputs.dir }}
-#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/WORKSPACE.bazel') }}
-#          restore-keys: |
-#            ${{ runner.os }}-build-${{ env.cache-name }}-
-#            ${{ runner.os }}-build-
-#            ${{ runner.os }}-
 
-#      - name: List the state of bazel cache
-#        if: steps.cache-bazel.outputs.cache-hit != 'true'
-#        continue-on-error: true
-#        run: ls ~/.cache/bazel
+
+      #      - name: Get bazel cache directory path
+      #        id: bazel-cache-dir-path
+      #        run: echo "dir=~/.cache/bazel" >> $GITHUB_OUTPUT
+      #
+      #      - name: Cache bazel modules
+      #        id: cache-bazel
+      #        uses: actions/cache@v3
+      #        env:
+      #          cache-name: cache-bazel-modules
+      #        with:
+      #          path: ${{ steps.bazel-cache-dir-path.outputs.dir }}
+      #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/WORKSPACE.bazel') }}
+      #          restore-keys: |
+      #            ${{ runner.os }}-build-${{ env.cache-name }}-
+      #            ${{ runner.os }}-build-
+      #            ${{ runner.os }}-
+      #Found with vswhere: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
+      #      - name: List the state of bazel cache
+      #        if: steps.cache-bazel.outputs.cache-hit != 'true'
+      #        continue-on-error: true
+      #        run: ls ~/.cache/bazel
+
+
+      - name: Find MSVC tools
+        if: runner.os == 'Windows'
+        run: |
+          which cl
+          which link
+          which lib
+          which ml64
+
 
       - name: Build Bazel Target
         env:
@@ -93,7 +109,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pydin-${{ env.RUNNER_OS }}-${{ env.PYDIN_VERSION }}-build${{ github.run_number }}
+          name: pydin-${{ env.PYDIN_VERSION }}-${{ env.RUNNER_OS }}-build${{ github.run_number }}
           path: |
             bazel-bin/external/pydin/pydin.tar.gz
             bazel-bin/external/pydin/pydin.zip
