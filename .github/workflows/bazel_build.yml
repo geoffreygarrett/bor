@@ -36,7 +36,10 @@ jobs:
 
       - name: lowercase runner.os
         run: |
-          echo "RUNNER_OS_LOW=${RUNNER_OS,,}" >> $GITHUB_ENV
+          echo "RUNNER_OS_LOW=$(echo ${RUNNER_OS} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+#          echo "RUNNER_OS_LOW=${RUNNER_OS,,}" >> $GITHUB_ENV
+
+
         env:
           RUNNER_OS: ${{ runner.os }}
         shell: bash
