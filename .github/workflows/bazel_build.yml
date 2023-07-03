@@ -23,7 +23,7 @@ jobs:
           submodules: recursive
 
       - name: Setup MSVC
-        if: runner.os == 'Windows'
+        if: ${{ runner.os }} == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.12.1
 
       - name: Get bazel cache directory path
@@ -51,6 +51,7 @@ jobs:
       - name: Build Bazel Target
         env:
           RUNNER_OS: ${{ runner.os }}
+        shell: bash
         run: |
           if [[ "${RUNNER_OS}" == "Windows" ]]; then
             echo "Windows build"
@@ -64,7 +65,6 @@ jobs:
             bazel build @pydin//:pydin-tar
           fi
 
-        shell: bash
       - name: Extract Pydin version
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
       - name: Print Pydin version
