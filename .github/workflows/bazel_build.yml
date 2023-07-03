@@ -85,7 +85,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           cpan Pod::Usage
-        shell: bash
+        shell: pwsh
 
       - name: Debug Perl
         shell: bash
