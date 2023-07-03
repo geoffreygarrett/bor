@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
 #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        os: [ ubuntu-latest, macOS-latest ]
+        os: [ ubuntu-latest ]
         include:
           - os: macOS-latest
             arch: arm64
@@ -31,8 +31,11 @@ jobs:
       - name: Mount bazel cache
         uses: actions/cache@v2
         with:
-          path: "/home/runner/.cache/bazel"
-          key: bazel-${{ runner.os }}  #
+          path: |
+            /home/runner/.cache/bazel
+            /home/runner/.cache/bazelisk
+          key: bazel-${{ runner.os }}-${{ hashFiles('**/WORKSPACE.bazel'), hashFiles('**/BUILD.bazel'), hashFiles('./pydin/**/*.bzl'), hashFiles('./odin/**/*.bzl') }}
+
 
       - name: Install LLVM and Check Version (macOS)
         if: runner.os == 'macOS'
