@@ -106,6 +106,18 @@ jobs:
           which lib
           which ml64
 
+      - name: Check Perl
+        run: |
+          perl -v
+          which perl
+        shell: pwsh
+
+      - name: Check Perl
+        run: |
+          perl -v
+          which perl
+        shell: bash
+
       - name: Install Perl module Pod::Usage (Windows)
         if: runner.os == 'Windows'
         run: |
