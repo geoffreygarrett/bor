@@ -52,22 +52,33 @@ jobs:
             /home/runner/.cache/bazelisk
           key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
 
+      #      - name: Install LLVM and Check Version (macOS)
+      #        if: runner.os == 'macOS'
+      #        run: |
+      #          # echo 'CC=$(brew --prefix llvm@15)/bin/clang' >> $GITHUB_ENV
+      #          # echo 'CXX=$(brew --prefix llvm@15)/bin/clang++' >> $GITHUB_ENV
+      #
+      #          brew install llvm
+      #          ls -l /usr/local/opt/llvm/bin
+      #          ls -l /usr/local/opt/llvm/lib
+      #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+      #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+      #          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
+      #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
+      #
+      #        shell: bash
       - name: Install LLVM and Check Version (macOS)
         if: runner.os == 'macOS'
         run: |
-          # echo 'CC=$(brew --prefix llvm@15)/bin/clang' >> $GITHUB_ENV
-          # echo 'CXX=$(brew --prefix llvm@15)/bin/clang++' >> $GITHUB_ENV
-          
           brew install llvm
-          ls -l /usr/local/opt/llvm/bin
-          ls -l /usr/local/opt/llvm/lib
-          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+          echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
+          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
           echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+          echo 'PATH="/usr/local/opt/llvm/bin:$PATH"' >> $GITHUB_ENV
           echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
           echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
-
+          echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
         shell: bash
-
 
       #      - name: Mount bazel cache
       #        uses: actions/cache@v3
@@ -256,20 +267,31 @@ jobs:
 
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
-        shell: pwsh
+        shell: bash
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-          $env:PATH += ";$pwd"
-          $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
-          $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
-          $PKG_CONFIG = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
-          $BAZEL_LLVM = "${{ env.BAZEL_LLVM }}".replace('\', '/')
-          ./bazel-vs2022 build @pydin//:pydin-zip `
-            --action_env=BAZEL_VC=$BAZEL_VC `
-            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
-            --action_env=PKG_CONFIG=$PKG_CONFIG `
-            --compiler=clang-cl `
-            --action_env=BAZEL_LLVM=$BAZEL_LLVM `
+          chmod +x ./bazel-vs2022.exe
+          ./bazel-vs2022.exe build @pydin//:pydin-zip \
+            --compiler=clang-cl \
+            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
+
+
+#      - name: Build Bazel Target (Windows) MSVC
+#        if: runner.os == 'Windows'
+#        shell: pwsh
+#        run: |
+#          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+#          $env:PATH += ";$pwd"
+#          $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
+#          $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
+#          $PKG_CONFIG = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
+#          $BAZEL_LLVM = "${{ env.BAZEL_LLVM }}".replace('\', '/')
+#          ./bazel-vs2022 build @pydin//:pydin-zip `
+#            --action_env=BAZEL_VC=$BAZEL_VC `
+#            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
+#            --action_env=PKG_CONFIG=$PKG_CONFIG `
+#            --compiler=clang-cl `
+#            --action_env=BAZEL_LLVM=$BAZEL_LLVM `
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
