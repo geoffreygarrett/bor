@@ -60,7 +60,6 @@ jobs:
             ./bazel-vs2022 build @pydin//:pydin-zip `
               --action_env=BAZEL_VC=$BAZEL_VC `
               --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-msvc `
-              --extra_execution_platforms=//:x64_windows-msvc `
           }
           elseif ("${{ matrix.compiler }}" -eq "clang") {
             ./bazel-vs2022 build @pydin//:pydin-zip `

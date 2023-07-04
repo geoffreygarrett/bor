@@ -31,14 +31,14 @@ platform(
     ],
 )
 
-platform(
-    name = "x64_windows-msvc",
-    constraint_values = [
-        "@platforms//cpu:x86_64",
-        "@platforms//os:windows",
-        "@bazel_tools//tools/cpp:msvc",
-    ],
-)
+#platform(
+#    name = "x64_windows-msvc",
+#    constraint_values = [
+#        "@platforms//cpu:x86_64",
+#        "@platforms//os:windows",
+#        "@bazel_tools//tools/cpp:msvc",
+#    ],
+#)
 
 genrule(
     name = "version",
