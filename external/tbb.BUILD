@@ -20,6 +20,8 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
+#constraint_setting(name = "has_waitpkg")
+
 cc_library(
     name = "tbb",
     srcs = glob([
@@ -36,8 +38,7 @@ cc_library(
         "include/oneapi/tbb/detail/*.h",
     ]),
     copts = ["-w"] + select({
-        "@platforms//os:windows": [""],
-        "@bazel_tools//tools/cpp:clang-cl": ["-mwaitpkg"],
+        #        "@platforms//os:windows": ["-mwaitpkg"],
         "//conditions:default": ["-mwaitpkg"],
     }),
     defines =
