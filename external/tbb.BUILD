@@ -21,6 +21,10 @@ package(
 )
 
 #constraint_setting(name = "has_waitpkg")
+config_setting(
+    name = "windows_msvc",
+    flag_values = {"@bazel_tools//tools/cpp:compiler": "msvc-cl"},
+)
 
 cc_library(
     name = "tbb",
@@ -38,8 +42,8 @@ cc_library(
         "include/oneapi/tbb/detail/*.h",
     ]),
     copts = ["-w"] + select({
-        #        "@platforms//os:windows": ["-mwaitpkg"], # TODO: Find another way to fix whats commented out
-        "//conditions:default": ["-mwaitpkg", "-mrtm"],  # -mrtm needed on windows clang...
+        ":windows_msvc": [""],  # TODO: Find another way to fix whats commented out
+        "//conditions:default": ["-mwaitpkg", "-mrtm"],  #  -mrtm needed on windows clang...
     }),
     defines =
         select({
