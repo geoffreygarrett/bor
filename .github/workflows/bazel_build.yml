@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        os: [ ubuntu-latest , macOS-latest ]
+        os: [ ubuntu-latest , macOS-latest  ]
     #        include:
     #          - os: macOS-latest
     #            arch: arm64
@@ -65,16 +65,33 @@ jobs:
       #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
       #
       #        shell: bash
+      #      - name: Install LLVM and Check Version (macOS)
+      #        if: runner.os == 'macOS'
+      #        run: |
+      #          brew install llvm
+      #          brew install libomp
+      #          echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
+      #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+      #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+      #          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
+      #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
+      #          echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
+      #        shell: bash
       - name: Install LLVM and Check Version (macOS)
         if: runner.os == 'macOS'
         run: |
           brew install llvm
+          brew install libomp
           echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
-          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
-          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/libomp/include"' >> $GITHUB_ENV
           echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
           echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
+          echo 'CXXFLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"' >> $GITHUB_ENV
           echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
+          echo 'OpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"' >> $GITHUB_ENV
+          echo 'OpenMP_CXX_LIB_NAMES="omp"' >> $GITHUB_ENV
+          echo 'OpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib' >> $GITHUB_ENV
         shell: bash
 
       - name: Cache LLVM and Clang (Windows)

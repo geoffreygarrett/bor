@@ -38,7 +38,7 @@ cc_library(
         "include/oneapi/tbb/detail/*.h",
     ]),
     copts = ["-w"] + select({
-        #        "@platforms//os:windows": ["-mwaitpkg"],
+        #        "@platforms//os:windows": ["-mwaitpkg"], # TODO: Find another way to fix whats commented out
         "//conditions:default": ["-mwaitpkg"],
     }),
     defines =
