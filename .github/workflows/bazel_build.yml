@@ -37,15 +37,13 @@ jobs:
       - name: lowercase runner.os
         run: |
           echo "RUNNER_OS_LOW=$(echo ${RUNNER_OS} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        #          echo "RUNNER_OS_LOW=${RUNNER_OS,,}" >> $GITHUB_ENV
-
 
         env:
           RUNNER_OS: ${{ runner.os }}
         shell: bash
 
       - name: Mount bazel cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             /home/runner/.cache/bazel
@@ -79,18 +77,11 @@ jobs:
           echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
         shell: bash
 
-      #      - name: Mount bazel cache
-      #        uses: actions/cache@v3
-      #        with:
-      #          path: "/home/runner/.cache/bazel"
-      #          key: bazel
 
-      - name: Setup MSVC
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1.12.1
-      #        with:
-      #          vsversion: 2019
-      #          toolset: 14.XX
+#      - name: Setup MSVC
+#        if: runner.os == 'Windows'
+#        uses: ilammy/msvc-dev-cmd@v1.12.1
+
 
       - name: List MSVC dirs
         if: runner.os == 'Windows'
@@ -250,22 +241,23 @@ jobs:
       #          version: latest
       #          platform: x64
 
-      - name: Print LLVM location (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          echo "LLVM location: $(which clang)"
-          echo "LLVM config location: $(which llvm-config)"
-        shell: bash
-      - name: Debug - List files in msys64/mingw64/bin
-        shell: bash
-        if: runner.os == 'Windows'
-        run: |
-          ls /c/msys64/mingw64/bin
+#      - name: Print LLVM location (Windows)
+#        if: runner.os == 'Windows'
+#        run: |
+#          echo "LLVM location: $(which clang)"
+#          echo "LLVM config location: $(which llvm-config)"
+#        shell: bash
+#      - name: Debug - List files in msys64/mingw64/bin
+#        shell: bash
+#        if: runner.os == 'Windows'
+#        run: |
+#          ls /c/msys64/mingw64/bin
+
       - name: Add clang path to $PATH env (Windows)
         shell: bash
         if: runner.os == 'Windows'
         run: |
-          echo "PATH=$PATH:/c/msys64/mingw64/bin" >> $GITHUB_ENV
+          echo "/c/msys64/mingw64/bin" >> $GITHUB_PATH
           echo "BAZEL_LLVM=/c/msys64/mingw64/bin" >> $GITHUB_ENV
 
       - name: Build Bazel Target (Windows)
