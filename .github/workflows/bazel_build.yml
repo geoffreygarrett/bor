@@ -322,32 +322,30 @@ jobs:
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
-          $BAZEL_LLVM = "${{ env.LLVM_PATH }}".replace('\', '/')
           ./bazel-vs2022 build @pydin//:pydin-zip `
             --action_env=BAZEL_VC=$BAZEL_VC `
             --action_env=PKG_CONFIG=$PKG_CONFIG `
-            --action_env=BAZEL_LLVM=$BAZEL_LLVM `
             --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
             --extra_execution_platforms=//:x64_windows-clang-cl `
 
+      #    --action_env=BAZEL_LLVM=$BAZEL_LLVM `
+      #               $BAZEL_LLVM = "${{ env.LLVM_PATH }}".replace('\', '/')
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
         shell: bash
         run: |
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
              bazel build @pydin//:pydin-tar --config=unix
-#
-#           if [[ "${RUNNER_OS}" == "Linux" ]]; then
-#        bazel build @pydin//:pydin-tar --config=unix
-#      elif [[ "${RUNNER_OS}" == "macOS" ]]; then
-#        bazel build @pydin//:pydin-tar \
-#            --config=unix \
-##                --action_env=CC=${{ env.CC }} \
-##                --action_env=CXX=${{ env.CXX }} \
-##                --action_env=LDFLAGS=${{ env.LDFLAGS }} \
-##                --action_env=CPPFLAGS=${{ env.CPPFLAGS }} \
-#            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
-#      fi
+           elif [[ "${RUNNER_OS}" == "macOS" ]]; then
+             bazel build @pydin//:pydin-tar \
+                 --config=unix \
+                 --action_env=CC=$(brew --prefix llvm@15)/bin/clang) \
+                 --action_env=CXX=$(brew --prefix llvm@15)/bin/clang++) \
+                 --action_env=LDFLAGS=${{ env.LDFLAGS }} \
+                 --action_env=CPPFLAGS=${{ env.CPPFLAGS }} \
+                 --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
+           fi
 
 
 
