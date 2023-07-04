@@ -139,17 +139,17 @@ jobs:
           which lib
           which ml64
 
-      - name: Check Perl
-        run: |
-          perl -v
-          which perl
-        shell: pwsh
-
-      - name: Check Perl
-        run: |
-          perl -v
-          which perl
-        shell: bash
+#      - name: Check Perl
+#        run: |
+#          perl -v
+#          which perl
+#        shell: pwsh
+#
+#      - name: Check Perl
+#        run: |
+#          perl -v
+#          which perl
+#        shell: bash
 
       - name: Update PATH
         run: |
