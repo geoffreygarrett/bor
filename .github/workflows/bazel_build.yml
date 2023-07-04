@@ -340,8 +340,8 @@ jobs:
            elif [[ "${RUNNER_OS}" == "macOS" ]]; then
              bazel build @pydin//:pydin-tar \
                  --config=unix \
-                 --action_env=CC=$(brew --prefix llvm@15)/bin/clang) \
-                 --action_env=CXX=$(brew --prefix llvm@15)/bin/clang++) \
+                 --action_env=CC=$(brew --prefix llvm@15)/bin/clang \
+                 --action_env=CXX=$(brew --prefix llvm@15)/bin/clang++ \
                  --action_env=LDFLAGS=${{ env.LDFLAGS }} \
                  --action_env=CPPFLAGS=${{ env.CPPFLAGS }} \
                  --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
