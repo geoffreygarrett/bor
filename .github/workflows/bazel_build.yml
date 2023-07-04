@@ -12,37 +12,28 @@ jobs:
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        os: [ ubuntu-latest   , windows-latest ]
-    #        include:
-    #          - os: macOS-latest
-    #            arch: arm64
+#        os: [ ubuntu-latest   , windows-latest ]
+        include:
+          - os: ubuntu-latest
+          - os: windows-latest
+            compiler: msvc
+#          - os: windows-latest
+#            compiler: clang
 
     steps:
-      # Caches and restores the bazelisk download directory, the bazel build directory.
-      #      - name: Cache bazel
-      #        uses: actions/cache@v2
-      #        env:
-      #          cache-name: bazel-cache
-      #        with:
-      #          path: |
-      #            /home/runner/.cache/bazel
-      #            /home/runner/.cache/bazelisk
-      #          key: ${{ runner.os }}-${{ env.cache-name }}
-
-      - name: Checkout Repo
+      - name: "Checkout Repo"
         uses: actions/checkout@v3
         with:
           submodules: recursive
 
-      - name: lowercase runner.os
+      - name: "Lowercase runner.os"
         run: |
           echo "RUNNER_OS_LOW=$(echo ${RUNNER_OS} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
         env:
           RUNNER_OS: ${{ runner.os }}
         shell: bash
 
-      - name: Mount bazel cache
+      - name: "Mount bazel cache"
         uses: actions/cache@v3
         with:
           path: |
@@ -50,285 +41,35 @@ jobs:
             /home/runner/.cache/bazelisk
           key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
 
-      #      - name: Install LLVM and Check Version (macOS)
-      #        if: runner.os == 'macOS'
-      #        run: |
-      #          # echo 'CC=$(brew --prefix llvm@15)/bin/clang' >> $GITHUB_ENV
-      #          # echo 'CXX=$(brew --prefix llvm@15)/bin/clang++' >> $GITHUB_ENV
-      #
-      #          brew install llvm
-      #          ls -l /usr/local/opt/llvm/bin
-      #          ls -l /usr/local/opt/llvm/lib
-      #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
-      #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
-      #          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
-      #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
-      #
-      #        shell: bash
-      #      - name: Install LLVM and Check Version (macOS)
-      #        if: runner.os == 'macOS'
-      #        run: |
-      #          brew install llvm
-      #          brew install libomp
-      #          echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
-      #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
-      #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
-      #          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
-      #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
-      #          echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
-      #        shell: bash
-
-
-      #      - name: Install LLVM and Check Version (macOS)
-      #        if: runner.os == 'macOS'
-      #        run: |
-      #          brew install llvm
-      #          brew install libomp
-      #          echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
-      #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -L/usr/local/opt/libomp/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
-      #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/libomp/include"' >> $GITHUB_ENV
-      #          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
-      #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
-      #          echo 'CXXFLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"' >> $GITHUB_ENV
-      #          echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
-      #          echo 'OpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"' >> $GITHUB_ENV
-      #          echo 'OpenMP_CXX_LIB_NAMES="omp"' >> $GITHUB_ENV
-      #          echo 'OpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib' >> $GITHUB_ENV
-      #        shell: bash
-
-      #      - name: Cache LLVM and Clang (Windows)
-      #        id: cache-llvm
-      #        if: runner.os == 'Windows'
-      #        uses: actions/cache@v3
-      #        with:
-      #          path: |
-      #            C:/Program Files/LLVM
-      #            ./llvm
-      #            /usr/local/opt/llvm/
-      #          key: llvm-15
-
-      #      - name: Install LLVM and Clang (Windows)
-      #        if: runner.os == 'Windows'
-      #        uses: KyleMayes/install-llvm-action@v1.8.2
-      #        with:
-      #          version: "15.0"
-      #          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
-
-      - name: Setup MSVC
+      - name: "[windows] Setup MSVC"
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.12.1
 
-      #  Visual C++ build tools seems to be installed at C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC
-      #But Bazel can't find the following tools:
-      #  VCVARSALL.BAT, cl.exe, link.exe, lib.exe, ml64.exe
-      #  for x64 target architecture
-
-
-
-      #      - name: Get bazel cache directory path
-      #        id: bazel-cache-dir-path
-      #        run: echo "dir=~/.cache/bazel" >> $GITHUB_OUTPUT
-      #
-      #      - name: Cache bazel modules
-      #        id: cache-bazel
-      #        uses: actions/cache@v3
-      #        env:
-      #          cache-name: cache-bazel-modules
-      #        with:
-      #          path: ${{ steps.bazel-cache-dir-path.outputs.dir }}
-      #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/WORKSPACE.bazel') }}
-      #          restore-keys: |
-      #            ${{ runner.os }}-build-${{ env.cache-name }}-
-      #            ${{ runner.os }}-build-
-      #            ${{ runner.os }}-
-      #Found with vswhere: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
-      #      - name: List the state of bazel cache
-      #        if: steps.cache-bazel.outputs.cache-hit != 'true'
-      #        continue-on-error: true
-      #        run: ls ~/.cache/bazel
-
-
-      #      - name: Find MSVC tools (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          which cl
-      #          which link
-      #          which lib
-      #          which ml64
-
-      #      - name: Check Perl
-      #        run: |
-      #          perl -v
-      #          which perl
-      #        shell: pwsh
-      #
-      #      - name: Check Perl
-      #        run: |
-      #          perl -v
-      #          which perl
-      #        shell: bash
-
-      #      - name: Update PATH
-      #        run: |
-      #          echo "PATH=C:/Strawberry/perl/bin;$env:PATH" >> $env:GITHUB_ENV
-      #        shell: pwsh
-
-      #      - name: Install Perl module Pod::Usage (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          cpan Pod::Usage
-      #          ls "C:\STRAWB~1\perl\site\lib\Pod"
-      #          ls "C:\STRAWB~1\perl\lib"
-      #          ls "C:\Strawberry\perl\site\lib\Pod"
-      #          ls "C:\Strawberry\perl\lib"
-      #        shell: pwsh
-
-      #      - name: Update PERL5LIB
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          echo "PERL5LIB=C:/Strawberry/perl/site/lib;C:/Strawberry/perl/site/lib/Pod;C:/Strawberry/perl/vendor/lib;C:/Strawberry/perl/vendor/lib/Pod;$PERL5LIB" >> $GITHUB_ENV
-      #        shell: bash
-
-      #  brew install libomp
-
-      #      - name: Install Perl module Pod::Usage (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          cpan Pod::Usage
-      #          $output = perl -V:installsitelib
-      #          $output -match "'.*'"
-      #          $PERL5LIB = $matches[0] -replace "'"
-      #          echo "PERL5LIB=$PERL5LIB" >> $GITHUB_ENV
-      #        shell: pwsh
-
-      #      - name: Debug Perl
-      #        if: runner.os == 'Windows'
-      #        shell: pwsh
-      #        run: |
-      #          perl -E 'say for @INC'
-      #          perl -E 'use Pod::Usage; say $INC{"Pod/Usage.pm"}'
-
-      #      - name: Prepare Bazel (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-      #          echo "PATH=$PATH:$(pwd)" >> $GITHUB_ENV
-      #        shell: bash
-
-      #      - name: Build Bazel Target
-      #        env:
-      #          RUNNER_OS: ${{ runner.os }}
-      #        shell: bash
-      #        run: |
-      #          if [[ "${RUNNER_OS}" == "Windows" ]]; then
-      #            bazel-vs2022 build @pydin//:pydin-zip
-      #              --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }}
-      #              --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
-      #          else
-      #            # Add commands for other OS types here
-      #            bazel build @pydin//:pydin-tar
-      #          fi
-      #      - name: Build Bazel Target (Windows)
-      #        if: runner.os == 'Windows'
-      #        shell: pwsh
-      #        run: |
-      #          bazel-vs2022 build @pydin//:pydin-zip `
-      #            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
-      #            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
-
-      #      - name: Build Bazel Target (Windows)
-      #        if: runner.os == 'Windows'
-      #        shell: pwsh
-      #        run: |
-      #          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-      #          $env:PATH += ";$pwd"
-      #          ./bazel-vs2022 build @pydin//:pydin-zip `
-      #            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} `
-      #            --action_env=BAZEL_VC_FULL_VERSION=${{ env.VCToolsVersion }}
-
-      #      - name: Setup PkgConfig (Windows)
-      #        if: runner.os == 'Windows'
-      #        env:
-      #          PKG_CONFIG_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/pkg-config_0.26-1_win32.zip"
-      #          GETTEXT_RUNTIME_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/dependencies/gettext-runtime_0.18.1.1-2_win32.zip"
-      #          GLIB_ZIP: "http://ftp.gnome.org/pub/gnome/binaries/win32/glib/2.28/glib_2.28.8-1_win32.zip"
-      #        run: |
-      #          curl -LO "${{ env.PKG_CONFIG_ZIP }}"
-      #          7z x pkg-config_0.26-1_win32.zip -oC:\MinGW\bin pkg-config.exe
-      #          curl -LO "${{ env.GETTEXT_RUNTIME_ZIP }}"
-      #          7z x gettext-runtime_0.18.1.1-2_win32.zip -oC:\MinGW\bin intl.dll
-      #          curl -LO "${{ env.GLIB_ZIP }}"
-      #          7z x glib_2.28.8-1_win32.zip -oC:\MinGW\bin libglib-2.0-0.dll
-      #          echo "C:\MinGW\bin" >> $GITHUB_PATH
-      #          echo "PKG_CONFIG_EXECUTABLE=C:\MinGW\bin\pkg-config.exe" >> $GITHUB_ENV
-      #        shell: pwsh
-      #      - name: Set up Clang (windows)
-      #        uses: egor-tensin/setup-clang@v1
-      #        with:
-      #          version: latest
-      #          platform: x64
-
-      #      - name: Print LLVM location (Windows)
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          echo "LLVM location: $(which clang)"
-      #          echo "LLVM config location: $(which llvm-config)"
-      #        shell: bash
-      #      - name: Debug - List files in msys64/mingw64/bin
-      #        shell: bash
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          ls /c/msys64/mingw64/bin
-
-
-      #
-      #      - name: Convert VCINSTALLDIR to Unix-style Path
-      #        shell: bash
-      #        if: runner.os == 'Windows'
-      #        run: |
-      #          export VCINSTALLDIR_UNIX=$(echo "${VCINSTALLDIR//\\//}")
-      #          echo "BAZEL_VC=${VCINSTALLDIR_UNIX}" >> $GITHUB_ENV
-      #
-      #      - name: Build Bazel Target (Windows)
-      #        if: runner.os == 'Windows'
-      #        shell: bash
-      #        run: |
-      #          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-      #          chmod +x ./bazel-vs2022.exe
-      #          ./bazel-vs2022.exe build @pydin//:pydin-zip \
-      #            --compiler=clang-cl \
-      #            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }} \
-      #            --action_env=BAZEL_VC=${{ env.BAZEL_VC }}
-
-      - name: Add clang path to $PATH env
+      - name: "[windows:clang] Add `msys64/mingw64` to PATH"
         shell: bash
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && matrix.compiler == 'clang'
         run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
-      - name: Clang version (Windows)
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          clang --version
-          clang-cl --version
-          clang++ --version
-          clang-cl -v
-          clang++ -v
-          clang -v
-
-      - name: Build Bazel Target (Windows)
+      - name: "[windows] Build Bazel Target"
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
-          ./bazel-vs2022 build @pydin//:pydin-zip `
-            --action_env=BAZEL_VC=$BAZEL_VC `
-            --action_env=PKG_CONFIG=$PKG_CONFIG `
-            --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
-            --extra_execution_platforms=//:x64_windows-clang-cl `
+          if (${{ matrix.compiler }} -eq "msvc") {
+            ./bazel-vs2022 build @pydin//:pydin-zip `
+              --action_env=BAZEL_VC=$BAZEL_VC `
+              --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-msvc `
+              --extra_execution_platforms=//:x64_windows-msvc `
+          }
+          elseif (${{ matrix.compiler }} -eq "clang") {
+            ./bazel-vs2022 build @pydin//:pydin-zip `
+              --action_env=BAZEL_VC=$BAZEL_VC `
+              --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
+              --extra_execution_platforms=//:x64_windows-clang-cl `
+          }
 
-      - name: Build Bazel Target (Unix)
+      - name: "[unix] Build Bazel Target"
         if: runner.os != 'Windows'
         shell: bash
         run: |
@@ -344,22 +85,16 @@ jobs:
               --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
           fi
 
-      - name: Extract Pydin version
+      - name: "Extract `pydin` version"
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION_INFO)" >> $GITHUB_ENV
       - name: Print Pydin version
         run: |
           echo "pydin version: $PYDIN_VERSION"
 
-      - name: List files
+      - name: "List files"
         run: ls -l bazel-bin/external/pydin/
 
-      - name: lowercase runner.os
-        run: |
-          echo "RUNNER_OS_LOW=${RUNNER_OS,,}" >> $GITHUB_ENV
-        env:
-          RUNNER_OS: ${{ runner.os }}
-
-      - name: Upload Artifact
+      - name: "Upload artifact"
         uses: actions/upload-artifact@v3
         with:
           name: pydin-${{ env.PYDIN_VERSION }}-${{ env.RUNNER_OS_LOW }}-build${{ github.run_number }}
@@ -367,24 +102,28 @@ jobs:
             bazel-bin/external/pydin/pydin.tar.gz
             bazel-bin/external/pydin/pydin.zip
 
-      - name: Setup QEMU
+      - name: "Setup QEMU"
         if: matrix.arch == 'arm64'
         uses: docker/setup-qemu-action@v1
-      - name: Setup Docker Buildx
+
+      - name: "Setup Docker Buildx"
         if: matrix.arch == 'arm64'
         uses: docker/setup-buildx-action@v1
-      - name: Build Docker Image
+
+      - name: "Build Docker Image"
         if: matrix.arch == 'arm64'
         uses: docker/build-push-action@v2
+
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/arm64
           push: false
-      - name: Run Docker Image
+
+      - name: "Run Docker Image"
         if: matrix.arch == 'arm64'
         run: docker run -v $(pwd):/app -w /app geoffreygarrett/bor:latest bazel build @pydin//:pydin-tar
 
-      - name: Adjust permissions for Bazel cache
+      - name: "Adjust permissions for Bazel cache"
         run: chmod -R 777 "/home/runner/.cache/bazel"
         shell: bash

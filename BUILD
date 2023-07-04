@@ -31,6 +31,15 @@ platform(
     ],
 )
 
+platform(
+    name = "x64_windows-mscv",
+    constraint_values = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:windows",
+        "@bazel_tools//tools/cpp:msvc",
+    ],
+)
+
 genrule(
     name = "version",
     srcs = ["//:VERSION"],
