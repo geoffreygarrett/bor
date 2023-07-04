@@ -74,7 +74,6 @@ jobs:
           echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
           echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
           echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
-          echo 'PATH="/usr/local/opt/llvm/bin:$PATH"' >> $GITHUB_ENV
           echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
           echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
           echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
@@ -151,26 +150,26 @@ jobs:
 #          which perl
 #        shell: bash
 
-      - name: Update PATH
-        run: |
-          echo "PATH=C:/Strawberry/perl/bin;$env:PATH" >> $env:GITHUB_ENV
-        shell: pwsh
+#      - name: Update PATH
+#        run: |
+#          echo "PATH=C:/Strawberry/perl/bin;$env:PATH" >> $env:GITHUB_ENV
+#        shell: pwsh
 
-      - name: Install Perl module Pod::Usage (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          cpan Pod::Usage
-          ls "C:\STRAWB~1\perl\site\lib\Pod"
-          ls "C:\STRAWB~1\perl\lib"
-          ls "C:\Strawberry\perl\site\lib\Pod"
-          ls "C:\Strawberry\perl\lib"
-        shell: pwsh
+#      - name: Install Perl module Pod::Usage (Windows)
+#        if: runner.os == 'Windows'
+#        run: |
+#          cpan Pod::Usage
+#          ls "C:\STRAWB~1\perl\site\lib\Pod"
+#          ls "C:\STRAWB~1\perl\lib"
+#          ls "C:\Strawberry\perl\site\lib\Pod"
+#          ls "C:\Strawberry\perl\lib"
+#        shell: pwsh
 
-      - name: Update PERL5LIB
-        if: runner.os == 'Windows'
-        run: |
-          echo "PERL5LIB=C:/Strawberry/perl/site/lib;C:/Strawberry/perl/site/lib/Pod;C:/Strawberry/perl/vendor/lib;C:/Strawberry/perl/vendor/lib/Pod;$PERL5LIB" >> $GITHUB_ENV
-        shell: bash
+#      - name: Update PERL5LIB
+#        if: runner.os == 'Windows'
+#        run: |
+#          echo "PERL5LIB=C:/Strawberry/perl/site/lib;C:/Strawberry/perl/site/lib/Pod;C:/Strawberry/perl/vendor/lib;C:/Strawberry/perl/vendor/lib/Pod;$PERL5LIB" >> $GITHUB_ENV
+#        shell: bash
 
       #  brew install libomp
 
