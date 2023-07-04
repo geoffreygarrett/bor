@@ -251,6 +251,13 @@ jobs:
           echo "/c/msys64/mingw64/bin" >> $GITHUB_PATH
           echo "BAZEL_LLVM=/c/Program\ Files/LLVM" >> $GITHUB_ENV
 
+      - name: Convert VCINSTALLDIR to Unix-style Path
+        shell: bash
+        if: runner.os == 'Windows'
+        run: |
+          export VCINSTALLDIR_UNIX=$(echo "${VCINSTALLDIR//\\//}")
+          echo "BAZEL_VC=${VCINSTALLDIR_UNIX}" >> $GITHUB_ENV
+
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
         shell: bash
@@ -260,7 +267,7 @@ jobs:
           ./bazel-vs2022.exe build @pydin//:pydin-zip \
             --compiler=clang-cl \
             --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }} \
-            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} 
+            --action_env=BAZEL_VC=${{ env.BAZEL_VC }} 
       
 
       #      - name: Build Bazel Target (Windows) MSVC
