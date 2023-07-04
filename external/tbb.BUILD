@@ -39,7 +39,7 @@ cc_library(
     ]),
     copts = ["-w"] + select({
         #        "@platforms//os:windows": ["-mwaitpkg"], # TODO: Find another way to fix whats commented out
-        "//conditions:default": ["-mwaitpkg"],
+        "//conditions:default": ["-mwaitpkg", "-mrtm"],  # -mrtm needed on windows clang...
     }),
     defines =
         select({
