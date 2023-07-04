@@ -12,13 +12,13 @@ jobs:
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-#        os: [ ubuntu-latest   , windows-latest ]
+        #        os: [ ubuntu-latest   , windows-latest ]
         include:
           - os: ubuntu-latest
           - os: windows-latest
             compiler: msvc
-#          - os: windows-latest
-#            compiler: clang
+    #          - os: windows-latest
+    #            compiler: clang
 
     steps:
       - name: "Checkout Repo"
@@ -56,13 +56,13 @@ jobs:
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
-          if (${{ matrix.compiler }} -eq "msvc") {
+          if ("${{ matrix.compiler }}" -eq "msvc") {
             ./bazel-vs2022 build @pydin//:pydin-zip `
               --action_env=BAZEL_VC=$BAZEL_VC `
               --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-msvc `
               --extra_execution_platforms=//:x64_windows-msvc `
           }
-          elseif (${{ matrix.compiler }} -eq "clang") {
+          elseif ("${{ matrix.compiler }}" -eq "clang") {
             ./bazel-vs2022 build @pydin//:pydin-zip `
               --action_env=BAZEL_VC=$BAZEL_VC `
               --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
