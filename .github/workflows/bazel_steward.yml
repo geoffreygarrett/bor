@@ -1,2 +1,18 @@
-#- name: Bazel steward
-#  uses: VirtusLab/bazel-steward@v1.0.0
+name: Bazel Steward
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Bazel steward
+        uses: VirtusLab/bazel-steward@v1.0.0
