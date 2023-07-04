@@ -256,7 +256,11 @@ jobs:
           echo "LLVM location: $(which clang)"
           echo "LLVM config location: $(which llvm-config)"
         shell: bash
-
+      - name: Debug - List files in msys64/mingw64/bin
+        shell: bash
+        if: runner.os == 'Windows'
+        run: |
+          ls /c/msys64/mingw64/bin
       - name: Add clang path to $PATH env (Windows)
         shell: bash
         if: runner.os == 'Windows'
