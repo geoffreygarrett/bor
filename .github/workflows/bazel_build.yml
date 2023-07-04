@@ -247,25 +247,36 @@ jobs:
       - name: Add clang path to $PATH env
         shell: bash
         if: runner.os == 'Windows'
-        run: echo "C:\msys64\mingw64\bin" >> $GITHUB_PATH
-#
-#      - name: Convert VCINSTALLDIR to Unix-style Path
-#        shell: bash
-#        if: runner.os == 'Windows'
-#        run: |
-#          export VCINSTALLDIR_UNIX=$(echo "${VCINSTALLDIR//\\//}")
-#          echo "BAZEL_VC=${VCINSTALLDIR_UNIX}" >> $GITHUB_ENV
-#
-#      - name: Build Bazel Target (Windows)
-#        if: runner.os == 'Windows'
-#        shell: bash
-#        run: |
-#          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-#          chmod +x ./bazel-vs2022.exe
-#          ./bazel-vs2022.exe build @pydin//:pydin-zip \
-#            --compiler=clang-cl \
-#            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }} \
-#            --action_env=BAZEL_VC=${{ env.BAZEL_VC }}
+        run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+      #
+      #      - name: Convert VCINSTALLDIR to Unix-style Path
+      #        shell: bash
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          export VCINSTALLDIR_UNIX=$(echo "${VCINSTALLDIR//\\//}")
+      #          echo "BAZEL_VC=${VCINSTALLDIR_UNIX}" >> $GITHUB_ENV
+      #
+      #      - name: Build Bazel Target (Windows)
+      #        if: runner.os == 'Windows'
+      #        shell: bash
+      #        run: |
+      #          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+      #          chmod +x ./bazel-vs2022.exe
+      #          ./bazel-vs2022.exe build @pydin//:pydin-zip \
+      #            --compiler=clang-cl \
+      #            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }} \
+      #            --action_env=BAZEL_VC=${{ env.BAZEL_VC }}
+
+      - name: Clang version (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          clang --version
+          clang-cl --version
+          clang++ --version
+          clang-cl -v
+          clang++ -v
+          clang -v
 
       - name: Build Bazel Target (Windows) MSVC
         if: runner.os == 'Windows'
