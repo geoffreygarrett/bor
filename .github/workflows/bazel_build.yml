@@ -112,13 +112,13 @@ jobs:
       #        run: ls ~/.cache/bazel
 
 
-      - name: Find MSVC tools (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          which cl
-          which link
-          which lib
-          which ml64
+#      - name: Find MSVC tools (Windows)
+#        if: runner.os == 'Windows'
+#        run: |
+#          which cl
+#          which link
+#          which lib
+#          which ml64
 
       #      - name: Check Perl
       #        run: |
@@ -249,7 +249,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "/c/msys64/mingw64/bin" >> $GITHUB_PATH
-          echo "BAZEL_LLVM=/c/msys64/mingw64/bin" >> $GITHUB_ENV
+          echo "BAZEL_LLVM=/c/Program Files/LLVM/" >> $GITHUB_ENV
 
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
