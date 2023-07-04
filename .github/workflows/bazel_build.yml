@@ -328,9 +328,6 @@ jobs:
             --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
             --extra_execution_platforms=//:x64_windows-clang-cl `
 
-      #    --action_env=BAZEL_LLVM=$BAZEL_LLVM `
-      #               $BAZEL_LLVM = "${{ env.LLVM_PATH }}".replace('\', '/')
-
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
         shell: bash
@@ -346,7 +343,6 @@ jobs:
               --action_env=CPPFLAGS=${{ env.CPPFLAGS }} \
               --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
           fi
-
 
       - name: Extract Pydin version
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
