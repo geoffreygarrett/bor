@@ -261,8 +261,8 @@ jobs:
         shell: bash
         if: runner.os == 'Windows'
         run: |
-          echo "PATH=$PATH:C:\msys64\mingw64\bin" >> $GITHUB_ENV
-          echo "BAZEL_LLVM=C:\msys64\mingw64\bin" >> $GITHUB_ENV
+          echo "PATH=$PATH:/c/msys64/mingw64/bin" >> $GITHUB_ENV
+          echo "BAZEL_LLVM=/c/msys64/mingw64/bin" >> $GITHUB_ENV
 
       - name: Build Bazel Target (Windows)
         if: runner.os == 'Windows'
