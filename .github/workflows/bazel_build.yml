@@ -306,7 +306,7 @@ jobs:
         run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
       - name: Clang version (Windows, macOS)
-        if: runner.os == 'Windows' | runner.os == 'macOS'
+        if: runner.os != 'Linux'
         shell: bash
         run: |
           clang --version
