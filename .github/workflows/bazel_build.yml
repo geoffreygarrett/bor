@@ -78,9 +78,9 @@ jobs:
         shell: bash
 
 
-      #      - name: Setup MSVC
-      #        if: runner.os == 'Windows'
-      #        uses: ilammy/msvc-dev-cmd@v1.12.1
+      - name: Setup MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1.12.1
 
       #  Visual C++ build tools seems to be installed at C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC
       #But Bazel can't find the following tools:
@@ -112,13 +112,13 @@ jobs:
       #        run: ls ~/.cache/bazel
 
 
-#      - name: Find MSVC tools (Windows)
-#        if: runner.os == 'Windows'
-#        run: |
-#          which cl
-#          which link
-#          which lib
-#          which ml64
+      #      - name: Find MSVC tools (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          which cl
+      #          which link
+      #          which lib
+      #          which ml64
 
       #      - name: Check Perl
       #        run: |
@@ -259,7 +259,8 @@ jobs:
           chmod +x ./bazel-vs2022.exe
           ./bazel-vs2022.exe build @pydin//:pydin-zip \
             --compiler=clang-cl \
-            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
+            --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }} \
+            --action_env=BAZEL_VC=${{ env.VCINSTALLDIR }} 
       
 
       #      - name: Build Bazel Target (Windows) MSVC
