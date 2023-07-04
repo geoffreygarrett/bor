@@ -289,6 +289,9 @@ jobs:
             --action_env=BAZEL_VC=$BAZEL_VC `
             --action_env=PKG_CONFIG=$PKG_CONFIG `
             --action_env=BAZEL_LLVM=$BAZEL_LLVM `
+            --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
+            --extra_execution_platforms=//:x64_windows-clang-cl `
+
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
