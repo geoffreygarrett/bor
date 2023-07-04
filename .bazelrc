@@ -7,7 +7,8 @@ common --enable_platform_specific_config
 # Set the C++ language version to C++20 for GCC/Clang.
 build:linux --cxxopt=-std=c++20
 build:macos --cxxopt=-std=c++20
-build:macos --cxxopt=-stdlib=libc++ -fexperimental-library
+build:macos --cxxopt=-stdlib=libc++
+build:macos --cxxopt=-fexperimental-library
 build:unix --cxxopt=-std=c++20
 
 # Set the C++ language version to C++20 for MSVC.
