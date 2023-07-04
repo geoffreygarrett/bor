@@ -37,21 +37,24 @@ jobs:
         if: runner.os == 'Windows'
         run: echo "TEST_TMPDIR=$HOMEPATH\\cache" >> $GITHUB_ENV
 
-      - name: "Mount bazel cache"
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ env.TEST_TMPDIR != '' && env.TEST_TMPDIR || runner.os == 'Windows' && (env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local') + '\\_bazel' || runner.os == 'macOS' && '/private/var/tmp' || '/home/runner/.cache/bazel' }}
-            ${{ env.TEST_TMPDIR != '' && env.TEST_TMPDIR || runner.os == 'Windows' && (env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local') + '\\_bazel' || runner.os == 'macOS' && '/private/var/tmp' || '/home/runner/.cache/bazelisk' }}
-          key: bazel-${{ runner.os }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
-
       #      - name: "Mount bazel cache"
       #        uses: actions/cache@v3
       #        with:
       #          path: |
-      #            ${{
-      #            /home/runner/.cache/bazelisk
-      #          key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
+      #            ${{ env.TEST_TMPDIR != '' && env.TEST_TMPDIR || runner.os == 'Windows' && (env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local') + '\\_bazel' || runner.os == 'macOS' && '/private/var/tmp' || '/home/runner/.cache/bazel' }}
+      #            ${{ env.TEST_TMPDIR != '' && env.TEST_TMPDIR || runner.os == 'Windows' && (env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local') + '\\_bazel' || runner.os == 'macOS' && '/private/var/tmp' || '/home/runner/.cache/bazelisk' }}
+      #          key: bazel-${{ runner.os }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
+
+      - name: "Mount bazel cache"
+        uses: actions/cache@v3
+        if: runner.os == 'Linux'
+        with:
+          path: |
+            /home/runner/.cache/bazel
+            /home/runner/.cache/bazelisk
+            /private/var/tmp
+            ${{ env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local' }}/_bazel
+          key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
 
       - name: "[windows] Setup MSVC"
         if: runner.os == 'Windows'
@@ -148,8 +151,7 @@ jobs:
       - name: "[macOS] Adjust permissions for Bazel cache on macOS"
         if: runner.os == 'macOS'
         run: |
-          chmod -R 777 "/private/var/tmp/bazel"
-          chmod -R 777 "/private/var/tmp/bazelisk"
+          chmod -R 777 "/private/var/tmp/"
         shell: bash
 
 #      - name: "Adjust permissions for Bazel cache on Windows"
