@@ -345,7 +345,7 @@ jobs:
           fi
 
       - name: Extract Pydin version
-        run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
+        run: echo "PYDIN_VERSION=$(cat pydin/VERSION_INFO)" >> $GITHUB_ENV
       - name: Print Pydin version
         run: |
           echo "pydin version: $PYDIN_VERSION"
