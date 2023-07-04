@@ -78,18 +78,9 @@ jobs:
         shell: bash
 
 
-#      - name: Setup MSVC
-#        if: runner.os == 'Windows'
-#        uses: ilammy/msvc-dev-cmd@v1.12.1
-
-
-      - name: List MSVC dirs
-        if: runner.os == 'Windows'
-        run: |
-          ls -l "${{ env.VCPKG_ROOT }}"
-          ls -l "${{ env.VCINSTALLDIR }}"
-          ls -l "${{ env.VCToolsInstallDir }}"
-          ls -l "${{ env.VCToolsInstallDir }}/bin/HostX64/x64"
+      #      - name: Setup MSVC
+      #        if: runner.os == 'Windows'
+      #        uses: ilammy/msvc-dev-cmd@v1.12.1
 
       #  Visual C++ build tools seems to be installed at C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC
       #But Bazel can't find the following tools:
@@ -129,38 +120,38 @@ jobs:
           which lib
           which ml64
 
-#      - name: Check Perl
-#        run: |
-#          perl -v
-#          which perl
-#        shell: pwsh
-#
-#      - name: Check Perl
-#        run: |
-#          perl -v
-#          which perl
-#        shell: bash
+      #      - name: Check Perl
+      #        run: |
+      #          perl -v
+      #          which perl
+      #        shell: pwsh
+      #
+      #      - name: Check Perl
+      #        run: |
+      #          perl -v
+      #          which perl
+      #        shell: bash
 
-#      - name: Update PATH
-#        run: |
-#          echo "PATH=C:/Strawberry/perl/bin;$env:PATH" >> $env:GITHUB_ENV
-#        shell: pwsh
+      #      - name: Update PATH
+      #        run: |
+      #          echo "PATH=C:/Strawberry/perl/bin;$env:PATH" >> $env:GITHUB_ENV
+      #        shell: pwsh
 
-#      - name: Install Perl module Pod::Usage (Windows)
-#        if: runner.os == 'Windows'
-#        run: |
-#          cpan Pod::Usage
-#          ls "C:\STRAWB~1\perl\site\lib\Pod"
-#          ls "C:\STRAWB~1\perl\lib"
-#          ls "C:\Strawberry\perl\site\lib\Pod"
-#          ls "C:\Strawberry\perl\lib"
-#        shell: pwsh
+      #      - name: Install Perl module Pod::Usage (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          cpan Pod::Usage
+      #          ls "C:\STRAWB~1\perl\site\lib\Pod"
+      #          ls "C:\STRAWB~1\perl\lib"
+      #          ls "C:\Strawberry\perl\site\lib\Pod"
+      #          ls "C:\Strawberry\perl\lib"
+      #        shell: pwsh
 
-#      - name: Update PERL5LIB
-#        if: runner.os == 'Windows'
-#        run: |
-#          echo "PERL5LIB=C:/Strawberry/perl/site/lib;C:/Strawberry/perl/site/lib/Pod;C:/Strawberry/perl/vendor/lib;C:/Strawberry/perl/vendor/lib/Pod;$PERL5LIB" >> $GITHUB_ENV
-#        shell: bash
+      #      - name: Update PERL5LIB
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          echo "PERL5LIB=C:/Strawberry/perl/site/lib;C:/Strawberry/perl/site/lib/Pod;C:/Strawberry/perl/vendor/lib;C:/Strawberry/perl/vendor/lib/Pod;$PERL5LIB" >> $GITHUB_ENV
+      #        shell: bash
 
       #  brew install libomp
 
@@ -241,17 +232,17 @@ jobs:
       #          version: latest
       #          platform: x64
 
-#      - name: Print LLVM location (Windows)
-#        if: runner.os == 'Windows'
-#        run: |
-#          echo "LLVM location: $(which clang)"
-#          echo "LLVM config location: $(which llvm-config)"
-#        shell: bash
-#      - name: Debug - List files in msys64/mingw64/bin
-#        shell: bash
-#        if: runner.os == 'Windows'
-#        run: |
-#          ls /c/msys64/mingw64/bin
+      #      - name: Print LLVM location (Windows)
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          echo "LLVM location: $(which clang)"
+      #          echo "LLVM config location: $(which llvm-config)"
+      #        shell: bash
+      #      - name: Debug - List files in msys64/mingw64/bin
+      #        shell: bash
+      #        if: runner.os == 'Windows'
+      #        run: |
+      #          ls /c/msys64/mingw64/bin
 
       - name: Add clang path to $PATH env (Windows)
         shell: bash
@@ -269,24 +260,24 @@ jobs:
           ./bazel-vs2022.exe build @pydin//:pydin-zip \
             --compiler=clang-cl \
             --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
+      
 
-
-#      - name: Build Bazel Target (Windows) MSVC
-#        if: runner.os == 'Windows'
-#        shell: pwsh
-#        run: |
-#          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
-#          $env:PATH += ";$pwd"
-#          $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
-#          $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
-#          $PKG_CONFIG = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
-#          $BAZEL_LLVM = "${{ env.BAZEL_LLVM }}".replace('\', '/')
-#          ./bazel-vs2022 build @pydin//:pydin-zip `
-#            --action_env=BAZEL_VC=$BAZEL_VC `
-#            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
-#            --action_env=PKG_CONFIG=$PKG_CONFIG `
-#            --compiler=clang-cl `
-#            --action_env=BAZEL_LLVM=$BAZEL_LLVM `
+      #      - name: Build Bazel Target (Windows) MSVC
+      #        if: runner.os == 'Windows'
+      #        shell: pwsh
+      #        run: |
+      #          curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
+      #          $env:PATH += ";$pwd"
+      #          $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
+      #          $BAZEL_VC_FULL_VERSION = "${{ env.VCToolsVersion }}".replace('\', '/')
+      #          $PKG_CONFIG = "${{ env.PKG_CONFIG_EXECUTABLE }}".replace('\', '/')
+      #          $BAZEL_LLVM = "${{ env.BAZEL_LLVM }}".replace('\', '/')
+      #          ./bazel-vs2022 build @pydin//:pydin-zip `
+      #            --action_env=BAZEL_VC=$BAZEL_VC `
+      #            --action_env=BAZEL_VC_FULL_VERSION=$BAZEL_VC_FULL_VERSION `
+      #            --action_env=PKG_CONFIG=$PKG_CONFIG `
+      #            --compiler=clang-cl `
+      #            --action_env=BAZEL_LLVM=$BAZEL_LLVM `
 
       - name: Build Bazel Target (Unix)
         if: runner.os != 'Windows'
