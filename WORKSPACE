@@ -28,6 +28,14 @@ rules_foreign_cc_dependencies()
 
 rules_pkg_dependencies()
 
+register_execution_platforms(
+    ":x64_windows-clang-cl",
+)
+
+register_toolchains(
+    "@local_config_cc//:cc-toolchain-x64_windows-clang-cl",
+)
+
 #
 ## ---------------------------------------------------------
 ## Initial setup and tools
