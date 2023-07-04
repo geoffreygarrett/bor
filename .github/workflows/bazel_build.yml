@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        os: [ ubuntu-latest , macOS-latest  ]
+        os: [ ubuntu-latest , macOS-latest , windows-latest ]
     #        include:
     #          - os: macOS-latest
     #            arch: arm64
@@ -77,6 +77,22 @@ jobs:
           echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
         shell: bash
 
+      - name: Cache LLVM and Clang (Windows)
+        id: cache-llvm
+        if: runner.os == 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: |
+            C:/Program Files/LLVM
+            ./llvm
+          key: llvm-16
+
+      - name: Install LLVM and Clang (Windows)
+        if: runner.os == 'Windows'
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "16.0"
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
 
       - name: Setup MSVC
         if: runner.os == 'Windows'
@@ -244,10 +260,10 @@ jobs:
       #        run: |
       #          ls /c/msys64/mingw64/bin
 
-      - name: Add clang path to $PATH env
-        shell: bash
-        if: runner.os == 'Windows'
-        run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+      #      - name: Add clang path to $PATH env
+      #        shell: bash
+      #        if: runner.os == 'Windows'
+      #        run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
       #
       #      - name: Convert VCINSTALLDIR to Unix-style Path
       #        shell: bash
@@ -284,7 +300,7 @@ jobs:
         run: |
           curl -LO "https://github.com/redsun82/bazel/releases/download/vs-2022-fix-0.1/bazel-vs2022.exe"
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
-          $BAZEL_LLVM = "C:/Program Files/LLVM"
+          $BAZEL_LLVM = "${{ env.LLVM_PATH }}".replace('\', '/')
           ./bazel-vs2022 build @pydin//:pydin-zip `
             --action_env=BAZEL_VC=$BAZEL_VC `
             --action_env=PKG_CONFIG=$PKG_CONFIG `
