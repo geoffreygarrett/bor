@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        os: [ ubuntu-latest , macOS-latest , windows-latest ]
+        os: [ ubuntu-latest , macOS-latest ]
     #        include:
     #          - os: macOS-latest
     #            arch: arm64
@@ -65,21 +65,21 @@ jobs:
       #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
       #
       #        shell: bash
-      - name: Install LLVM and Check Version (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install llvm
-          echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
-          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
-          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
-          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
-          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
-          echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
-        shell: bash
+      #      - name: Install LLVM and Check Version (macOS)
+      #        if: runner.os == 'macOS'
+      #        run: |
+      #          brew install llvm
+      #          echo "LLVM_PATH=/usr/local/opt/llvm" >> $GITHUB_ENV
+      #          echo 'LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"' >> $GITHUB_ENV
+      #          echo 'CPPFLAGS="-I/usr/local/opt/llvm/include"' >> $GITHUB_ENV
+      #          echo 'CC=/usr/local/opt/llvm/bin/clang' >> $GITHUB_ENV
+      #          echo 'CXX=/usr/local/opt/llvm/bin/clang++' >> $GITHUB_ENV
+      #          echo 'LIBRARY_PATH="/usr/local/opt/llvm/lib/c++:$LIBRARY_PATH"' >> $GITHUB_ENV
+      #        shell: bash
 
-      - name: Cache LLVM and Clang (Windows)
+      - name: Cache LLVM and Clang (macOS, Windows)
         id: cache-llvm
-        if: runner.os == 'Windows'
+        if: runner.os == 'macOS' || runner.os == 'Windows'
         uses: actions/cache@v3
         with:
           path: |
@@ -87,8 +87,8 @@ jobs:
             ./llvm
           key: llvm-16
 
-      - name: Install LLVM and Clang (Windows)
-        if: runner.os == 'Windows'
+      - name: Install LLVM and Clang (macOS, Windows)
+        if: runner.os == 'macOS' || runner.os == 'Windows'
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "16.0"
@@ -318,14 +318,13 @@ jobs:
           elif [[ "${RUNNER_OS}" == "macOS" ]]; then
             bazel build @pydin//:pydin-tar \
                 --config=unix \
-                --action_env=CC=${{ env.CC }} \
-                --action_env=CXX=${{ env.CXX }} \
-                --action_env=LDFLAGS=${{ env.LDFLAGS }} \
-                --action_env=CPPFLAGS=${{ env.CPPFLAGS }} 
-
+                --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
           fi
 
-
+      #                --action_env=CC=${{ env.CC }} \
+      #                --action_env=CXX=${{ env.CXX }} \
+      #                --action_env=LDFLAGS=${{ env.LDFLAGS }} \
+      #                --action_env=CPPFLAGS=${{ env.CPPFLAGS }} \
 
       - name: Extract Pydin version
         run: echo "PYDIN_VERSION=$(cat pydin/VERSION)" >> $GITHUB_ENV
