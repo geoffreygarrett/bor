@@ -51,7 +51,7 @@ jobs:
 
       - name: "Mount bazel cache"
         uses: actions/cache@v3
-        if: runner.os == 'Linux'
+#        if: runner.os == 'Linux'
         with:
           path: |
             /home/runner/.cache/bazel
