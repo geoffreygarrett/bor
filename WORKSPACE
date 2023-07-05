@@ -4,6 +4,11 @@
 workspace(name = "bor")
 
 local_repository(
+    name = "pybind11_bazel",
+    path = "pydin/external/pybind11_bazel",
+)
+
+local_repository(
     name = "odin",
     path = "odin",
 )
