@@ -128,7 +128,9 @@ jobs:
           echo "BUILD_HASH=$SHORT_HASH" >> $GITHUB_ENV
 
       - name: "Set Python version without period"
-        run: echo "PYTHON_VERSION_NO_DOT=${{ matrix.python_version }}." | tr -d '.' >> $GITHUB_ENV
+        shell: bash
+        run: |
+          echo "PYTHON_VERSION_NO_DOT=${{ matrix.python_version }}." | tr -d '.' >> $GITHUB_ENV
 
       - name: "Set artifact name (pre-build number check)"
         shell: bash
