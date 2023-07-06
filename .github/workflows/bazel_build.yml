@@ -129,7 +129,9 @@ jobs:
           name: pydin-${{ env.PYDIN_VERSION }}-${{ env.RUNNER_OS_LOW }}-build${{ github.run_number }}
           path: |
             bazel-bin/external/pydin/pydin.tar.gz
+            bazel-bin/external/pydin/pydin-tar.manifest
             bazel-bin/external/pydin/pydin.zip
+            bazel-bin/external/pydin/pydin-zip.manifest
 
       - name: "[macOS:arm64] Setup QEMU"
         if: matrix.arch == 'arm64' && runner.os == 'macOS'
