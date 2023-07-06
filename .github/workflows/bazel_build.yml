@@ -59,7 +59,7 @@ jobs:
             /home/runner/.cache/bazel
             /home/runner/.cache/bazelisk
             /private/var/tmp
-            ${{ env.HOME }}/_bazel_${{ env.USERNAME }}
+            C:/users/runneradmin/_bazel_runneradmin/
           key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
 
       - name: "[windows] Setup MSVC"
@@ -165,7 +165,7 @@ jobs:
       - name: "[macOS] Adjust permissions for Bazel cache on macOS"
         if: runner.os == 'macOS'
         run: |
-          chmod -R 777 "/private/var/tmp/"
+          sudo chmod -R 777 "/private/var/tmp/"
         shell: bash
 
 #      - name: "Adjust permissions for Bazel cache on Windows"
