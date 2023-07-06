@@ -57,7 +57,7 @@ jobs:
             /home/runner/.cache/bazel
             /home/runner/.cache/bazelisk
             /private/var/tmp
-            ${{ env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local' }}/_bazel
+            ${{ env.HOME }}
           key: bazel-${{ env.RUNNER_OS_LOW }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
 
       - name: "[windows] Setup MSVC"
