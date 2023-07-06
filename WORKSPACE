@@ -13,7 +13,7 @@ local_repository(
     path = "odin",
 )
 
-load("@odin//:deps.bzl", "odin_dependencies")
+load("@odin//:repositories.bzl", "odin_dependencies")
 
 odin_dependencies()
 
@@ -22,7 +22,7 @@ local_repository(
     path = "pydin",
 )
 
-load("@pydin//:deps.bzl", "pydin_dependencies")
+load("@pydin//:repositories.bzl", "pydin_dependencies")
 
 pydin_dependencies()
 
@@ -118,8 +118,10 @@ python_configure(
 #pip_parse(
 #    python_interpreter_target = interpreter,
 #)
+load("@rules_python//python:pip.bzl", "pip_parse")
 
-pip_install(
+pip_parse(
+    name = "pip",
     # (Optional) You can provide extra parameters to pip.
     # Here, make pip output verbose (this is usable with `quiet = False`).
     #extra_pip_args = ["-v"],
@@ -147,7 +149,8 @@ pip_install(
     #environment = {"HTTP_PROXY": "http://my.proxy.fun/"},
 
     # Uses the default repository name "pip"
-    requirements = "//:requirements-lock.txt",
+    requirements_lock = "//:requirements-lock.txt",
+    requirements_windows = "//:requirements-windows.txt",
 )
 
 load("@pip//:requirements.bzl", "install_deps")
