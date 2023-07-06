@@ -8,19 +8,25 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        #        os: [ ubuntu-latest   , windows-latest ]
         include:
           - os: ubuntu-latest
+            os_env_name: 'linux-64'
+            python-version: '3.10'
           - os: windows-latest
-            compiler: msvc
+            os_env_name: 'win-64'
+            python-version: '3.10'
           - os: macOS-latest
-          - os: macOS-latest
-            arch: arm64
+            os_env_name: 'osx-64'
+            python-version: '3.10'
+    #          - os: macOS-latest
+    #            os_env_name: 'osx-arm64'
+    #            python-version: '3.10'
+    #            arch: arm64
 
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os_env_name }}-py${{ matrix.python-version }}-bazel
     steps:
       - name: "Checkout Repo"
         uses: actions/checkout@v3
@@ -33,18 +39,6 @@ jobs:
         env:
           RUNNER_OS: ${{ runner.os }}
         shell: bash
-
-      #      - name: "[windows] Set TEST_TMPDIR"
-      #        if: runner.os == 'Windows'
-      #        run: echo "TEST_TMPDIR=$HOMEPATH\\cache" >> $GITHUB_ENV
-
-      #      - name: "Mount bazel cache"
-      #        uses: actions/cache@v3
-      #        with:
-      #          path: |
-      #            ${{ env.TEST_TMPDIR != '' && env.TEST_TMPDIR || runner.os == 'Windows' && (env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local') + '\\_bazel' || runner.os == 'macOS' && '/private/var/tmp' || '/home/runner/.cache/bazel' }}
-      #            ${{ env.TEST_TMPDIR != '' && env.TEST_TMPDIR || runner.os == 'Windows' && (env.HOME != '' && env.HOME || env.USERPROFILE != '' && env.USERPROFILE || '!USERPROFILE!\AppData\Local') + '\\_bazel' || runner.os == 'macOS' && '/private/var/tmp' || '/home/runner/.cache/bazelisk' }}
-      #          key: bazel-${{ runner.os }}-${{ hashFiles('**/*.bzl', '**/*.BUILD') }}
 
       - name: "Mount bazel cache"
         uses: actions/cache@v3
@@ -120,10 +114,42 @@ jobs:
         shell: bash
         run: ls -l bazel-bin/external/pydin/
 
+      - name: "Compute file hash"
+        id: compute_hash
+        shell: bash
+        run: |
+          echo "BUILD_HASH=${{ hashFiles('bazel-bin/external/pydin/**/*') }}" >> $GITHUB_ENV
+
+      - name: "Set artifact name (pre-build number check)"
+        shell: bash
+        run: |
+          PYTHON_VERSION=${{ matrix.python_version//./ }}
+          echo "ARTIFACT_NAME=pydin-${{ env.PYDIN_VERSION }}-${{ matrix.os_env_name }}-py${PYTHON_VERSION}h${{ env.BUILD_HASH }}" >> $GITHUB_ENV
+
+      - name: "Check build number"
+        id: build_number
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+            let buildNumber = artifacts.data.artifacts
+              .filter(artifact => artifact.name.startsWith(process.env.ARTIFACT_NAME))
+              .length;
+            return buildNumber + 1;
+
+      - name: "Set artifact name"
+        shell: bash
+        run: |
+          echo "ARTIFACT_NAME=${{ env.ARTIFACT_NAME }}-${{ steps.build_number.outputs.result }}" >> $GITHUB_ENV
+
       - name: "Upload artifact"
         uses: actions/upload-artifact@v3
         with:
-          name: pydin-${{ env.PYDIN_VERSION }}-${{ env.RUNNER_OS_LOW }}-build${{ github.run_number }}
+          name: ${{ env.ARTIFACT_NAME }}
           path: |
             bazel-bin/external/pydin/pydin.tar.gz
             bazel-bin/external/pydin/pydin-tar.manifest
