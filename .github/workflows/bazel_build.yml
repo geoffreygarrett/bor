@@ -14,12 +14,12 @@ jobs:
         #        os: [ ubuntu-latest, windows-latest, macOS-latest ]
         #        os: [ ubuntu-latest   , windows-latest ]
         include:
-#          - os: macOS-latest
+          #          - os: macOS-latest
           - os: ubuntu-latest
           - os: windows-latest
             compiler: msvc
-#          - os: macOS-latest
-#            arch: arm64
+    #          - os: macOS-latest
+    #            arch: arm64
 
     #          - os: windows-latest
     #            compiler: clang
@@ -51,7 +51,7 @@ jobs:
 
       - name: "Mount bazel cache"
         uses: actions/cache@v3
-#        if: runner.os == 'Linux'
+        #        if: runner.os == 'Linux'
         with:
           path: |
             /home/runner/.cache/bazel
@@ -77,19 +77,21 @@ jobs:
           $BAZEL_VC = "${{ env.VCINSTALLDIR }}".replace('\', '/')
           if ("${{ matrix.compiler }}" -eq "msvc") {
             ./bazel-vs2022 build @pydin//:pydin-zip `
-              --action_env=BAZEL_VC=$BAZEL_VC `
+              --action_env=BAZEL_VC=$BAZEL_VC 
+          
             ./bazel-vs2022 test @pydin//tests:test_astrodynamics `
-              --action_env=BAZEL_VC=$BAZEL_VC `
+              --action_env=BAZEL_VC=$BAZEL_VC 
           }
           elseif ("${{ matrix.compiler }}" -eq "clang") {
             ./bazel-vs2022 build @pydin//:pydin-zip `
               --action_env=BAZEL_VC=$BAZEL_VC `
               --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
-              --extra_execution_platforms=//:x64_windows-clang-cl `
+              --extra_execution_platforms=//:x64_windows-clang-cl 
+          
             ./bazel-vs2022 test @pydin//tests:test_astrodynamics `
               --action_env=BAZEL_VC=$BAZEL_VC `
               --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
-              --extra_execution_platforms=//:x64_windows-clang-cl `
+              --extra_execution_platforms=//:x64_windows-clang-cl 
           }
 
       - name: "[unix] Build Bazel Target"
