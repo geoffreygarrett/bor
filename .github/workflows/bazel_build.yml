@@ -30,7 +30,7 @@ jobs:
     #            arch: arm64
 
     runs-on: ${{ matrix.os }}
-    name: "(${{ matrix.os }}, Python ${{ matrix.python_version }})"
+    name: "( os: ${{ matrix.os }}, python: ${{ matrix.python_version }} )"
     #    name: ${{ matrix.os_env_name }}-py${{ matrix.python_version }}-bazel
     steps:
       - name: "Checkout Repo"
@@ -123,7 +123,9 @@ jobs:
         id: compute_hash
         shell: bash
         run: |
-          echo "BUILD_HASH=${{ hashFiles('bazel-bin/external/pydin/**/*') }}" >> $GITHUB_ENV
+          FULL_HASH=${{ hashFiles('bazel-bin/external/pydin/**/*') }}
+          SHORT_HASH=${FULL_HASH:0:8}  # Take the first 8 characters of the hash
+          echo "BUILD_HASH=$SHORT_HASH" >> $GITHUB_ENV
 
       - name: "Set Python version without period"
         run: echo "PYTHON_VERSION_NO_DOT=${{ matrix.python_version }}." | tr -d '.' >> $GITHUB_ENV
