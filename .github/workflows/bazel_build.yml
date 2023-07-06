@@ -13,20 +13,20 @@ jobs:
         include:
           - os: ubuntu-latest
             os_env_name: 'linux-64'
-            python-version: '3.10'
+            python_version: '3.10'
           - os: windows-latest
             os_env_name: 'win-64'
-            python-version: '3.10'
+            python_version: '3.10'
           - os: macOS-latest
             os_env_name: 'osx-64'
-            python-version: '3.10'
+            python_version: '3.10'
     #          - os: macOS-latest
     #            os_env_name: 'osx-arm64'
-    #            python-version: '3.10'
+    #            python_version: '3.10'
     #            arch: arm64
 
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os_env_name }}-py${{ matrix.python-version }}-bazel
+    name: ${{ matrix.os_env_name }}-py${{ matrix.python_version }}-bazel
     steps:
       - name: "Checkout Repo"
         uses: actions/checkout@v3
@@ -120,10 +120,13 @@ jobs:
         run: |
           echo "BUILD_HASH=${{ hashFiles('bazel-bin/external/pydin/**/*') }}" >> $GITHUB_ENV
 
+      - name: "Set Python version without period"
+        run: echo "PYTHON_VERSION_NO_DOT=${{ matrix.python_version }}." | tr -d '.' >> $GITHUB_ENV
+
       - name: "Set artifact name (pre-build number check)"
         shell: bash
         run: |
-          PYTHON_VERSION=${{ matrix.python-version//./ }}
+          PYTHON_VERSION=${{ env.PYTHON_VERSION_NO_DOT }}
           echo "ARTIFACT_NAME=pydin-${{ env.PYDIN_VERSION }}-${{ matrix.os_env_name }}-py${PYTHON_VERSION}h${{ env.BUILD_HASH }}" >> $GITHUB_ENV
 
       - name: "Check build number"
