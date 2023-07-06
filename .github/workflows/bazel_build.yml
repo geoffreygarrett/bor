@@ -30,7 +30,7 @@ jobs:
     #            arch: arm64
 
     runs-on: ${{ matrix.os }}
-    name: "( os: ${{ matrix.os }}, python: ${{ matrix.python_version }} )"
+    name: "( os: ${{ runner.os }}, python: ${{ matrix.python_version }} )"
     #    name: ${{ matrix.os_env_name }}-py${{ matrix.python_version }}-bazel
     steps:
       - name: "Checkout Repo"
