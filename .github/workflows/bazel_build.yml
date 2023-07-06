@@ -123,7 +123,7 @@ jobs:
       - name: "Set artifact name (pre-build number check)"
         shell: bash
         run: |
-          PYTHON_VERSION=${{ matrix.python_version//./ }}
+          PYTHON_VERSION=${{ matrix.python-version//./ }}
           echo "ARTIFACT_NAME=pydin-${{ env.PYDIN_VERSION }}-${{ matrix.os_env_name }}-py${PYTHON_VERSION}h${{ env.BUILD_HASH }}" >> $GITHUB_ENV
 
       - name: "Check build number"
