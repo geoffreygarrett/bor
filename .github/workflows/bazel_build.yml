@@ -78,9 +78,15 @@ jobs:
           if ("${{ matrix.compiler }}" -eq "msvc") {
             ./bazel-vs2022 build @pydin//:pydin-zip `
               --action_env=BAZEL_VC=$BAZEL_VC `
+            ./bazel-vs2022 test @pydin//tests:test_astrodynamics `
+              --action_env=BAZEL_VC=$BAZEL_VC `
           }
           elseif ("${{ matrix.compiler }}" -eq "clang") {
             ./bazel-vs2022 build @pydin//:pydin-zip `
+              --action_env=BAZEL_VC=$BAZEL_VC `
+              --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
+              --extra_execution_platforms=//:x64_windows-clang-cl `
+            ./bazel-vs2022 test @pydin//tests:test_astrodynamics `
               --action_env=BAZEL_VC=$BAZEL_VC `
               --extra_toolchains=@local_config_cc//:cc-toolchain-x64_windows-clang-cl `
               --extra_execution_platforms=//:x64_windows-clang-cl `
@@ -91,10 +97,16 @@ jobs:
         shell: bash
         run: |
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
-            bazel build @pydin//:pydin-tar --config=unix
+            bazel build @pydin//:pydin-tar
+            bazel test @pydin//tests:test_astrodynamics
           elif [[ "${RUNNER_OS}" == "macOS" ]]; then
             bazel build @pydin//:pydin-tar \
-              --config=unix \
+              --action_env=CC=$(brew --prefix llvm@15)/bin/clang \
+              --action_env=CXX=$(brew --prefix llvm@15)/bin/clang++ \
+              --action_env=LDFLAGS=${{ env.LDFLAGS }} \
+              --action_env=CPPFLAGS=${{ env.CPPFLAGS }} \
+              --action_env=BAZEL_LLVM=${{ env.BAZEL_LLVM }}
+            bazel test @pydin//tests:test_astrodynamics \
               --action_env=CC=$(brew --prefix llvm@15)/bin/clang \
               --action_env=CXX=$(brew --prefix llvm@15)/bin/clang++ \
               --action_env=LDFLAGS=${{ env.LDFLAGS }} \
