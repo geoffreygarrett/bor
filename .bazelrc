@@ -20,7 +20,6 @@ build:windows --action_env=BAZEL_VC="/c/Program Files (x86)/Microsoft Visual Stu
 
 # Building with optimization and verbose on failures.
 build -c opt #--verbose_failures
-test -s
 
 # Set test output to be streamed directly to the console.
 test --test_output=all
