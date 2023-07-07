@@ -1,12 +1,68 @@
-# Ignore IDE related files
-.idea/
-.vscode/
+# Python related
+*.py[cod]
+*.so
+*.dylib
+*.dll
+*~
+__pycache__/
 
-# Bazel build
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.ipa
+*.dll
+
+# Bazel build files
 /bazel-*
 *.runfiles/
 
-# Ignore OS generated files
+# CMake Files
+CMakeFiles/
+CMakeCache.txt
+CMakeScripts/
+cmake_install.cmake
+CTestTestfile.cmake
+_install_manifest.txt
+compile_commands.json
+Makefile
+*.cmake
+
+# IDE specific files
+# VSCode
+.vscode/
+# CLion
+.clwb/
+# IntelliJ / PyCharm
+.idea/
+
+# Logs and databases
+*.log
+
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -14,15 +70,3 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Ignore logs
-*.log
-
-# Ignore Python files that are typically not needed
-*.py[cod]
-*~
-__pycache__/
-
-gtoc12/*
-gtoc12/
-
