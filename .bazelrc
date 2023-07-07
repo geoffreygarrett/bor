@@ -16,6 +16,7 @@ build:windows --cxxopt=/std:c++20
 
 # Specifies the number of concurrent jobs that Bazel will try to execute.
 build --jobs=20
+build:windows --action_env=BAZEL_VC="/c/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools"
 
 # Building with optimization and verbose on failures.
 build -c opt #--verbose_failures
