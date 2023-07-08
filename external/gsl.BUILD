@@ -1,3 +1,6 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "configure_make") 
+  
+
 config_setting(
     name = "linux",
     values = {"cpu": "k8"},
