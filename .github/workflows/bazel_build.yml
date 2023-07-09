@@ -15,11 +15,11 @@ jobs:
             os_env_name: 'linux-64'
             python_version: '3.10'
             py_version: '310'
-        #  - os: windows-latest
-         #   os_env_name: 'win-64'
-         #   python_version: '3.10'
-         #   py_version: '310'
-         #   compiler: msvc
+          - os: windows-latest
+            os_env_name: 'win-64'
+            python_version: '3.10'
+            py_version: '310'
+            compiler: msvc
           - os: macOS-latest
             os_env_name: 'osx-64'
             python_version: '3.10'
