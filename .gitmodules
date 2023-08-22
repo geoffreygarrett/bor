@@ -5,3 +5,6 @@
 	path = odin
 	url = git@github.com:geoffreygarrett/odin.git
 
+[submodule "mimir/library"]
+	path = mimir/library
+	url = git@github.com:geoffreygarrett/mimir-library.git
