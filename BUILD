@@ -1,6 +1,6 @@
 # BUILD
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
-load("@odin//:bazel/tools/build_rules.bzl", "create_aliases", "create_config_setting")
+load("@//:bazel/tools/build_rules.bzl", "create_aliases", "create_config_setting")
 
 # Creating aliases, from all dependencies defined in the WORKSPACE file.
 ALIASES = {

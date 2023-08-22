@@ -8,21 +8,16 @@ local_repository(
     path = "pydin/external/pybind11_bazel",
 )
 
-local_repository(
-    name = "odin",
-    path = "odin",
-)
+#local_repository(
+#    name = "odin",
+#    path = "odin",
+#)
 
-load("@odin//:repositories.bzl", "odin_dependencies")
+load("@@bor//odin:repositories.bzl", "odin_dependencies")
 
 odin_dependencies()
 
-local_repository(
-    name = "pydin",
-    path = "pydin",
-)
-
-load("@pydin//:repositories.bzl", "pydin_dependencies")
+load("@@bor//pydin:repositories.bzl", "pydin_dependencies")
 
 pydin_dependencies()
 
@@ -67,8 +62,8 @@ pip_parse(
     python_interpreter_target = interpreter,
 
     # Uses the default repository name "pip"
-    requirements_lock = "//:requirements-lock.txt",
-    requirements_windows = "//:requirements-windows.txt",
+    requirements_lock = "@@bor//pydin:requirements_lock.txt",
+    requirements_windows = "@@bor//pydin:requirements_windows.txt",
 )
 
 load("@pip//:requirements.bzl", "install_deps")
