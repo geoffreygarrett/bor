@@ -1,0 +1,152 @@
+{
+  "main": {
+    "id": "2166d8c53e3852e1",
+    "type": "split",
+    "children": [
+      {
+        "id": "15b89dc300d7638f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3878e8a3152f0d1d",
+            "type": "leaf",
+            "state": {
+              "type": "pdf",
+              "state": {
+                "file": "library/astrodynamics/small_bodies/1805.10788.pdf"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "e63513df6df7ae8d",
+    "type": "split",
+    "children": [
+      {
+        "id": "68c0e7bb73c3a57d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a5446c89b318363b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "a0750c49dcc5eb27",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "2c654227a89b79fd",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "44edd72acdb12b4e",
+    "type": "split",
+    "children": [
+      {
+        "id": "c59501201b012207",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "be300b2dce58a218",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "library/astrodynamics/small_bodies/1805.10788.pdf",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1dbad27a9a96ac46",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "library/astrodynamics/small_bodies/1805.10788.pdf",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "a240f462efb8348f",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "fb25067002fa8ac4",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "library/astrodynamics/small_bodies/1805.10788.pdf"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "a5446c89b318363b",
+  "lastOpenFiles": [
+    "library/astrodynamics/gravity/2305.19698.pdf",
+    "library/astrodynamics/gravity/core/10.2478_v10018-008-0006-z.pdf"
+  ]
+}
