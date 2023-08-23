@@ -92,10 +92,6 @@ create_config_setting(
     visibility = ["//visibility:public"],
 )
 
-exports_files(["requirements-lock.txt"])
-
-exports_files(["requirements-windows.txt"])
-
 #load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_filegroup", "pkg_files", "pkg_mkdirs", "strip_prefix")
 #load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 #load("@rules_pkg//pkg:zip.bzl", "pkg_zip")
