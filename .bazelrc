@@ -1,18 +1,31 @@
 # .bazelrc
-
-# These options are effective in all Bazel commands executed in this workspace.
+# Enables platform-specific build configurations. Automatically applies flags based on host OS.
+# Example: build:windows or build:linux to apply OS-specific flags.
 common --enable_platform_specific_config
-# The above option results in --config=linux,macos, or --config=windows automatically.
 
-# Set the C++ language version to C++20 for GCC/Clang.
-build:linux --cxxopt=-std=c++20
-build:macos --cxxopt=-std=c++20
-build:macos --cxxopt=-stdlib=libc++
-#build:macos --cxxopt=-fexperimental-library
-build:unix --cxxopt=-std=c++20
+# Example configurations:
+# build:windows --copt=/W3 # Sets a specific compiler option for Windows
+# build:linux --copt=-Wno-error # Ignores certain compiler warnings on Linux
+
+# Set the C++ language version to C++20.
+build --cxxopt=-std=c++20
+build:windows --cxxopt=/std:c++20 # TODO: might need to ONLY BE FOR MSVC
+# TODO: ---------???? build:macos --cxxopt=-stdlib=libc++
+
+# Bazel's C++ rules now allow the selection of toolchains through platforms.
+# Use --incompatible_enable_cc_toolchain_resolution to enable this feature.
+# # https://docs.bazel.build/versions/4.2.2/platforms-intro.html#c
+
+# New way to configure a C++ project:
+# $ bazel build //:my_cpp_project --platforms=//:myplatform
+
+# Legacy method (replaced by the above command):
+# $ bazel build //:my_cpp_project --cpu=... --crosstool_top=... --compiler=...
+
+# Note: This mode is not enabled by default due to dependencies in Android and iOS projects.
+# Enabling it may require adding platform support for Android and iOS.
+# See #7260 and Configuring C++ toolchains for migration guidance.
 build --incompatible_enable_cc_toolchain_resolution
-# Set the C++ language version to C++20 for MSVC.
-build:windows --cxxopt=/std:c++20
 
 # Specifies the number of concurrent jobs that Bazel will try to execute.
 build --jobs=20
