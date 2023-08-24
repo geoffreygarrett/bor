@@ -45,7 +45,10 @@ python_register_toolchains(
     python_version = "3.10",
 )
 
-load("@python3_10//:defs.bzl", "interpreter")
+load("@python3_10//:defs.bzl", default_host_platform = "host_platform", default_interpreter = "interpreter")
+
+interpreter = "@python3_10_aarch64-apple-darwin//:bin/python3"
+# TODO: fix this... somehow
 
 # ---------------------------------------------------------
 # Pybind11 interpreter configuration
@@ -60,7 +63,7 @@ python_configure(
 # ---------------------------------------------------------
 # Pip environment: build, test, example, benchmark
 # ---------------------------------------------------------
-load("@@bor//pydin/environment:dependency_set.bzl", "pip_dependency_set")
+load("@@bor//pydin:environment/dependency_set.bzl", "pip_dependency_set")
 
 # Build dependencies
 pip_dependency_set(
@@ -105,3 +108,39 @@ pip_dependency_set(
 load("@pip_benchmark//:requirements.bzl", pip_install_benchmark_deps = "install_deps")
 
 pip_install_benchmark_deps()
+
+# Homebrew
+
+new_local_repository(
+    name = "libomp",
+    build_file_content = """
+cc_import(
+    name = "libomp",
+    hdrs = glob(["include/*.h"]),
+    shared_library = "lib/libomp.dylib",
+    static_library = "lib/libomp.a",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "omp",
+    deps = [":libomp"],
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+)
+""",
+    path = "/opt/homebrew/opt/libomp",
+)
+
+new_local_repository(
+    name = "brew_gsl",
+    build_file_content = """
+cc_library(
+    name = "gsl",
+    hdrs = glob(["include/**/*.h"]),
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+)
+""",
+    path = "/opt/homebrew/opt/gsl",
+)
