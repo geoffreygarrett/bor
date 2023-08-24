@@ -1,4 +1,3 @@
-# .bazelrc
 # Enables platform-specific build configurations. Automatically applies flags based on host OS.
 # Example: build:windows or build:linux to apply OS-specific flags.
 common --enable_platform_specific_config
@@ -10,22 +9,52 @@ common --enable_platform_specific_config
 # Set the C++ language version to C++20.
 build --cxxopt=-std=c++20
 build:windows --cxxopt=/std:c++20 # TODO: might need to ONLY BE FOR MSVC
+#build:macos --action_env=LIBTOOL="$(command -v glibtool)"  # brew install libtool
+#build:macos --action_env=AR="$LIBTOOL"  # brew install binutils
+#build:macos --action_env=PATH="/opt/homebrew/opt/libtool/libexec/gnubin:$PATH"  # brew install libtool
+#build:macos --config=darwin_arm64
 # TODO: ---------???? build:macos --cxxopt=-stdlib=libc++
 
+# libomp
+#build:macos --action_env=LDFLAGS="-L/opt/homebrew/opt/libomp/lib"        # brew install libomp
+#build:macos --action_env=CPPFLAGS="-I/opt/homebrew/opt/libomp/include"   # brew install libomp
+#build:macos --copt=-I/opt/homebrew/opt/libomp/include                    # brew install libomp
+#build:macos --linkopt=-L/opt/homebrew/opt/libomp/lib                      # brew install libomp
+#build:macos --action_env=ARCHFLAGS="-arch arm64"
+#build:macos --action_env=ARCHFLAGS="-arch x86_64"
+build:macos --action_env=ARCHFLAGS="-arch arm64"
+#build:macos --macos_cpus=x86_64,arm64
+build:macos --macos_cpus=arm64
+build:macos --macos_minimum_os=11.0
+#build:macos --cpu=darwin_arm64
+#build:macos --host_cpu=darwin_arm64
+#build:macos --macos_cpus=arm64
+#build:macos --macos_cpus=arm64
+
+#build --copt=-I$(brew --prefix libomp)/include
+#build --linkopt=-L$(brew --prefix libomp)/lib
 # Bazel's C++ rules now allow the selection of toolchains through platforms.
 # Use --incompatible_enable_cc_toolchain_resolution to enable this feature.
 # # https://docs.bazel.build/versions/4.2.2/platforms-intro.html#c
-
+#
 # New way to configure a C++ project:
 # $ bazel build //:my_cpp_project --platforms=//:myplatform
-
+#
 # Legacy method (replaced by the above command):
 # $ bazel build //:my_cpp_project --cpu=... --crosstool_top=... --compiler=...
-
+#
 # Note: This mode is not enabled by default due to dependencies in Android and iOS projects.
 # Enabling it may require adding platform support for Android and iOS.
 # See #7260 and Configuring C++ toolchains for migration guidance.
 build --incompatible_enable_cc_toolchain_resolution
+
+# Thrust configuration.
+build:linux --@com_github_nvidia_thrust//:thrust_host_system=TBB
+build:linux --@com_github_nvidia_thrust//:thrust_device_system=CUDA
+build:windows --@com_github_nvidia_thrust//:thrust_host_system=TBB
+build:windows --@com_github_nvidia_thrust//:thrust_device_system=CUDA
+build:macos --@com_github_nvidia_thrust//:thrust_host_system=CPP
+build:macos --@com_github_nvidia_thrust//:thrust_device_system=OPENMP
 
 # Specifies the number of concurrent jobs that Bazel will try to execute.
 build --jobs=20
