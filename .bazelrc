@@ -40,8 +40,10 @@ build --cxxopt=-std=c++20
 build:macos --linkopt=-Wl,-undefined,dynamic_lookup # https://pybind11.readthedocs.io/en/stable/compiling.html#building-manually | https://github.com/pybind/pybind11/issues/382
 build:macos --action_env=ARCHFLAGS="-arch arm64"
 build:macos --macos_cpus=arm64
-build:macos --macos_minimum_os=13.0
-#build:macos --apple_platform_type=macos --cpu=darwin_arm64
+#build:macos --macos_minimum_os=13.3
+build:macos --macos_minimum_os=14.0
+build:macos --xcode_version=15.0 # sonoro 14.0 beta
+build:macos --action_env=DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer  # sonoro 14.0 beta
 
 # Currently gsl dependency is satisfied via brew on macos.
 # TODO: This works well for now, but we should fix build, and improve configurability for local.
