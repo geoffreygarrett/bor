@@ -14,6 +14,9 @@ local_repository(
 # ---------------------------------------------------------
 # Homebrew
 # ---------------------------------------------------------
+load("@@bor//freyr:repositories.bzl", "freyr_dependencies")
+
+freyr_dependencies()
 
 # ---------------------------------------------------------
 # Odin dependencies
@@ -21,6 +24,16 @@ local_repository(
 load("@@bor//odin:repositories.bzl", "odin_dependencies")
 
 odin_dependencies()
+
+# ---------------------------------------------------------
+# (From Odin dependencies) Apple toolchains
+# ---------------------------------------------------------
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
 
 # ---------------------------------------------------------
 # Pydin dependencies

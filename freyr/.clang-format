@@ -1,0 +1,107 @@
+# Generated from CLion C/C++ Code Style settings
+#BasedOnStyle: LLVM
+#AccessModifierOffset: -4
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments:  # Consecutive
+  Enabled: true
+  PadOperators: false
+AlignArrayOfStructures: Right
+AlignConsecutiveDeclarations: Consecutive
+AlignOperands: AlignAfterOperator
+AllowAllArgumentsOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Always
+#AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: None
+#AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterUnion: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: true
+#BreakBeforeBinaryOperators: All
+BreakBeforeTernaryOperators: true
+#BreakConstructorInitializers: BeforeColon
+BreakInheritanceList: BeforeColon
+#ColumnLimit: 0
+CompactNamespaces: false
+ContinuationIndentWidth: 8
+#IndentCaseLabels: true
+#IndentPPDirectives: None
+#IndentWidth: 4
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: true
+PointerAlignment: Right
+ReflowComments: false
+#SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 0
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+#TabWidth: 4
+UseTab: Never
+
+# See all possible options and defaults with:
+# clang-format --style=llvm --dump-config
+BasedOnStyle: LLVM
+AccessModifierOffset: -4
+AllowShortLambdasOnASingleLine: true
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBinaryOperators: All
+BreakConstructorInitializers: BeforeColon
+ColumnLimit: 99
+CommentPragmas: 'NOLINT:.*|^ IWYU pragma:'
+IncludeBlocks: Regroup
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+IndentWidth: 4
+Language: Cpp
+SpaceAfterCStyleCast: true
+Standard: Cpp11
+StatementMacros: ['PyObject_HEAD']
+TabWidth: 4
+IncludeCategories:
+  - Regex:           '<pybind11/.*'
+    Priority:        -1
+  - Regex:           'pybind11.h"$'
+    Priority:        1
+  - Regex:           '^".*/?detail/'
+    Priority:        1
+    SortPriority:    2
+  - Regex:           '^"'
+    Priority:        1
+    SortPriority:    3
+  - Regex:           '<[[:alnum:]._]+>'
+    Priority:        4
+  - Regex:           '.*'
+    Priority:        5
