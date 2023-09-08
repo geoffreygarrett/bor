@@ -72,7 +72,7 @@ normal_image = np.transpose(normal_image, (1, 0, 2))
 
 my_normal_map = normal.tensor_based(
     data=normal_image,
-    amplitude=2.0,
+    amplitude=30.0,
     u_scale=0.1,
     v_scale=0.1
 )

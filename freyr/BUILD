@@ -13,11 +13,21 @@ cc_library(
         "USE_TBB",
     ],
     includes = ["include"],
+    visibility = ["//visibility:public"],
     deps = [
         "@com_github_eigen_eigen//:header_lib",
         "@com_github_oneapi_onetbb//:tbb",
         #        "@com_github_opencv_opencv//:core",
-    ],
+    ] + select(
+        {
+            "@platforms//os:osx": [
+                "@developer_apple_com_metal_cpp//:metal_cpp",
+            ],
+            "//conditions:default": [
+                #                "@com_github_opencv_opencv//:core",
+            ],
+        },
+    ),
 )
 
 pybind_library(

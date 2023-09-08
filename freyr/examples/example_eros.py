@@ -41,7 +41,7 @@ eros_shape = shape.mesh(faces=faces, vertices=vertices, position=np.array([0, 0,
 camera_position = np.array([0, 0, 1.5], dtype=np.float32)
 
 # Get  current screen size
-downscale_factor = 1
+downscale_factor = 12
 camera_width = screen_width // downscale_factor
 camera_height = screen_height // downscale_factor
 aspect_ratio = camera_width / camera_height

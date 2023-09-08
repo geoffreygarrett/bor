@@ -4,17 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "15b89dc300d7638f",
+        "id": "0c8d7735e2e22660",
         "type": "tabs",
         "children": [
           {
-            "id": "3878e8a3152f0d1d",
+            "id": "02e37b459585573c",
             "type": "leaf",
             "state": {
-              "type": "pdf",
-              "state": {
-                "file": "library/astrodynamics/small_bodies/1805.10788.pdf"
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -83,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "library/astrodynamics/small_bodies/1805.10788.pdf",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "library/astrodynamics/small_bodies/1805.10788.pdf",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -122,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "library/astrodynamics/small_bodies/1805.10788.pdf"
-              }
+              "state": {}
             }
           }
         ]
@@ -144,8 +138,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "a5446c89b318363b",
+  "active": "02e37b459585573c",
   "lastOpenFiles": [
+    "library/astrodynamics/small_bodies/1805.10788.pdf",
     "library/astrodynamics/gravity/2305.19698.pdf",
     "library/astrodynamics/gravity/core/10.2478_v10018-008-0006-z.pdf"
   ]
