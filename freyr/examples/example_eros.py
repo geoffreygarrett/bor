@@ -41,7 +41,7 @@ eros_shape = shape.mesh(faces=faces, vertices=vertices, position=np.array([0, 0,
 camera_position = np.array([0, 0, 1.5], dtype=np.float32)
 
 # Get  current screen size
-downscale_factor = 12
+downscale_factor = 1
 camera_width = screen_width // downscale_factor
 camera_height = screen_height // downscale_factor
 aspect_ratio = camera_width / camera_height
@@ -96,29 +96,38 @@ my_material1.specular = gray * c_specular
 my_material1.shininess = 0.0
 
 # Create Scene
-my_scene = scene.scene(my_perspective_camera)
-# my_scene = scene.scene(my_orthographic_camera)
-# my_scene = scene.scene(my_fisheye_camera)
-my_scene.add_light(my_point_light)
+for dist in np.linspace(1.5, 4.5, 5):
+    camera_position = np.array([0, 0, dist], dtype=np.float32)
 
-# Add Entities to Scene
-my_scene.add_entity(scene.entity(
-    shape=eros_shape,
-    material=my_material1)
-)
+    # Create Cameras
+    my_perspective_camera = camera.perspective(
+        position=camera_position, fov=np.deg2rad(60),
+        aspect_ratio=aspect_ratio, width=camera_width, height=camera_height
+    )
 
-# Render Scene
-my_shader_graph = shader.graph()
-# my_shader_graph.add_node(shader.lambertian())
-my_shader_graph.add_node(shader.phong())
-image = my_shader_graph.execute_single_pass(my_scene)
-image = (image * 255).clip(0, 255).astype('uint8')
+    my_scene = scene.scene(my_perspective_camera)
+    # my_scene = scene.scene(my_orthographic_camera)
+    # my_scene = scene.scene(my_fisheye_camera)
+    my_scene.add_light(my_point_light)
 
-# upscale to screen size
-screen_width, screen_height = screen_width, screen_height
-image = np.repeat(np.repeat(image, screen_width // camera_width, axis=1), screen_height // camera_height, axis=0)
+    # Add Entities to Scene
+    my_scene.add_entity(scene.entity(
+        shape=eros_shape,
+        material=my_material1)
+    )
 
-# Save Image
-image = Image.fromarray(image, 'RGB')
-image.show()
-image.save('my_image.png')
+    # Render Scene
+    my_shader_graph = shader.graph()
+    # my_shader_graph.add_node(shader.lambertian())
+    my_shader_graph.add_node(shader.phong())
+    image = my_shader_graph.execute_single_pass(my_scene)
+    image = (image * 255).clip(0, 255).astype('uint8')
+
+    # upscale to screen size
+    screen_width, screen_height = screen_width, screen_height
+    image = np.repeat(np.repeat(image, screen_width // camera_width, axis=1), screen_height // camera_height, axis=0)
+
+    # Save Image
+    image = Image.fromarray(image, 'RGB')
+    image.show()
+    image.save('my_image_{dist}.png'.format(dist=dist))

@@ -35,6 +35,95 @@ py_binary(
     ],
 )
 
+alias(
+    name = "blenderproc",
+    actual = entry_point(
+        pkg = "blenderproc",
+        script = "blenderproc",
+    ),
+)
+
+#genrule(
+#    name = "example_blenderproc",
+#    srcs = [],
+#    outs = [],
+#    cmd = "$(location :blenderproc) --help",
+#    tools = [
+#        ":blenderproc",
+#    ],
+#)
+#sh_binary(
+#    name = "example_blenderproc",
+#    srcs = [
+#        "example_blenderproc.py",
+#        "example_blenderproc_main.py",
+#    ],
+#    deps = [
+#        ":blenderproc",
+#    ],
+#)
+#
+
+#sh_binary(
+#    name = "example_blenderproc",
+#    srcs = [
+#        "example_blenderproc.sh",
+#    ],
+#    data =
+#        [
+#            "@//freyr/examples/data:Eros.node",
+#            "@//freyr/examples/data:eros_gaskell_200k_poly.obj",
+#            "@//freyr/examples/data:eros_gaskell_50k_poly.obj",
+#            "@//freyr/examples/data:eros_grayscale.jpg",
+#            ":blenderproc",
+#            "example_blenderproc_main.py",
+#
+#            #        "@//freyr",
+#            requirement("matplotlib"),
+#            requirement("screeninfo"),
+#            requirement("blenderproc"),
+#        ],
+#    env = {
+#        "BLENDERPROC_BIN": "$(location :blenderproc)",
+#    },
+#    visibility = ["//visibility:public"],
+#    #    deps = [
+#    #        ":blenderproc",
+#    #        #        "@//freyr",
+#    #        requirement("matplotlib"),
+#    #        requirement("screeninfo"),
+#    #    ],
+#)
+
+py_binary(
+    name = "example_blenderproc",
+    srcs = [
+        "example_blenderproc.py",
+        "example_blenderproc_main.py",
+    ],
+    data =
+        [
+            "@//freyr/examples/data:Eros.node",
+            "@//freyr/examples/data:eros_gaskell_200k_poly.obj",
+            "@//freyr/examples/data:eros_gaskell_200k_poly.ply",
+            "@//freyr/examples/data:eros_gaskell_50k_poly.obj",
+            "@//freyr/examples/data:eros_gaskell_50k_poly.ply",
+            "@//freyr/examples/data:eros_grayscale.jpg",
+        ],
+    env = {
+        "BLENDERPROC_BIN": "$(location :blenderproc)",
+        "BLENDERPROC_BASE_PATH": "$$(dir @//freyr/examples/data:eros_gaskell_50k_poly.obj)",
+    },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":blenderproc",
+        #        "@//freyr",
+        requirement("matplotlib"),
+        requirement("screeninfo"),
+        requirement("scipy"),
+    ],
+)
+
 genrule(
     name = "default_metallib",
     srcs = ["@//freyr/assets/shaders/metal:default"],

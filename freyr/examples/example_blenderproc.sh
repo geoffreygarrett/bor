@@ -1,0 +1,1 @@
+blenderproc run example_blenderproc_main.py

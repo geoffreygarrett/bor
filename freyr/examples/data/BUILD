@@ -2,5 +2,10 @@ exports_files([
     "GTOC12_Asteroids_Data.txt",
     "Eros.face",
     "Eros.node",
+    "eros_gaskell_50k_poly.obj",
+    "eros_gaskell_50k_poly.ply",
+    "eros_gaskell_200k_poly.ply",
+    "eros_gaskell_200k_poly.obj",
+    "eros_grayscale.jpg",
     "bricks.normal.jpeg",
 ])
