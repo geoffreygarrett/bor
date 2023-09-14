@@ -18,7 +18,7 @@ def initialize_scene():
     light.set_location([0, 50, 1000])
     light.set_rotation_euler([-np.pi / 4, np.pi / 3, 0])
     #    light.set_rotation_euler([-0.063, 0.6177, -0.1985])
-    light.set_energy(64)
+    light.set_energy(32)
 
 
 def setup_approach_camera_positions(positions=np.linspace(300, 5000, 10)):
@@ -249,7 +249,7 @@ os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 if __name__ == "__main__":
     t_eros = 5.27025547 * 60
     t_end = t_eros * 3.0
-    n_samples = 300
+    n_samples = 100
     f_sample = n_samples / t_end
     t_sample = 1 / f_sample
 
@@ -259,13 +259,21 @@ if __name__ == "__main__":
 
     # obj = bproc.loader.load_obj("Eros Gaskell 50k poly.ply")
     obj = bproc.loader.load_obj(os.path.join(BASE_PATH, "eros_gaskell_50k_poly.ply"))
+    print(dir(obj[0]))
+    print(obj[0])
+    print(type(obj[0]))
+
+    th0 = np.pi / 2
+
+    # raise Exception("stop")
 
     for i in range(n_samples):
-        th = 2 * np.pi / t_eros * t_sample * i
+        th = 2 * np.pi / t_eros * t_sample * i + th0
         obj[0].set_rotation_euler([0, 0, th], frame=i)
 
     # Create Lambertian material
     eros_texture = bpy.data.images.load(os.path.join(BASE_PATH, "eros_grayscale.jpg"))
+    obj[0].set_shading_mode("SMOOTH")
     asteroid_material = obj[0].get_materials()[0]
 
     # Create a new image texture node
@@ -274,10 +282,50 @@ if __name__ == "__main__":
     asteroid_material.set_principled_shader_value("Metallic", 0.0)
     asteroid_material.set_displacement_from_principled_shader_value("Base Color", multiply_factor=1.0)
     asteroid_material.set_principled_shader_value("Specular", 0.0)
+
+    print(asteroid_material)
+    print(dir(asteroid_material))
+    print(asteroid_material.nodes)
+
+    material_output_node = asteroid_material.nodes["Material Output"]
+
+    # raise Exception("stop")
+    text_coord_node = asteroid_material.nodes.new("ShaderNodeTexCoord")
+
+    mapping_node = asteroid_material.nodes.new("ShaderNodeMapping")
+    mapping_node.vector_type = "POINT"
+    mapping_node.vector_type = "POINT"
+    mapping_node.inputs[3].default_value[0] = -1
+    mapping_node.inputs[2].default_value[2] = np.pi
+
+    environment_texture_node = asteroid_material.nodes.new("ShaderNodeTexEnvironment")
+    environment_texture_node.image = bpy.data.images.load(os.path.join(BASE_PATH, "eros_grayscale.jpg"))
+
+    displacement_node = asteroid_material.nodes.new("ShaderNodeDisplacement")
+    displacement_node.inputs["Scale"].default_value = 1.0
+    displacement_node.inputs["Midlevel"].default_value = 0.5
+
+    multiply_node = asteroid_material.nodes.new("ShaderNodeMath")
+    multiply_node.operation = "MULTIPLY"
+    multiply_node.inputs[1].default_value = 0.1
+
+    asteroid_material.links.new(text_coord_node.outputs["Object"], mapping_node.inputs["Vector"])
+    asteroid_material.links.new(mapping_node.outputs["Vector"], environment_texture_node.inputs["Vector"])
+    asteroid_material.links.new(environment_texture_node.outputs["Color"],
+                                asteroid_material.nodes["Principled BSDF"].inputs["Base Color"])
+    asteroid_material.links.new(environment_texture_node.outputs["Color"], multiply_node.inputs[0])
+    asteroid_material.links.new(multiply_node.outputs[0], displacement_node.inputs["Height"])
+    asteroid_material.links.new(displacement_node.outputs["Displacement"], material_output_node.inputs["Displacement"])
+
     obj[0].set_material(0, asteroid_material)
 
-    cam_0 = 35791
+    # raise Exception("Stop here")
+
+    # cam_0 = 35791
+    cam_0 = 357
     cam_1 = 354.240
+    cam_0 = 500
+    cam_1 = 500
     initial_cam_pos = np.array([0, cam_0, 0])
     initial_cam_orient = np.array([0, np.pi / 2, 0])
     axis = [0, 1, 0]
@@ -287,6 +335,7 @@ if __name__ == "__main__":
 
     bproc.camera.set_intrinsics_from_blender_params(lens=np.deg2rad(5.5), lens_unit="FOV", clip_start=0.0,
                                                     clip_end=100000)
+    # bproc.camera.set_resolution(1020, 1020)
     bproc.camera.set_resolution(1020, 1020)
     # bproc.camera.set_resolution(500, 500)
     #    bproc.camera.set_resolution(102, 102)
