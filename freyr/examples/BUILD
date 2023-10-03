@@ -104,9 +104,49 @@ py_binary(
     data =
         [
             "@//freyr/examples/data:Eros.node",
-            "@//freyr/examples/data:eros_gaskell_200k_poly.obj",
             "@//freyr/examples/data:eros_gaskell_200k_poly.ply",
-            "@//freyr/examples/data:eros_gaskell_50k_poly.obj",
+            "@//freyr/examples/data:eros_gaskell_50k_poly.ply",
+            "@//freyr/examples/data:eros_grayscale.jpg",
+        ],
+    env = {
+        "BLENDERPROC_BIN": "$(location :blenderproc)",
+        "BLENDERPROC_BASE_PATH": "freyr/examples/data",
+    },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":blenderproc",
+        #        "@//freyr",
+        requirement("matplotlib"),
+        requirement("screeninfo"),
+        requirement("scipy"),
+    ],
+)
+
+# fiklegroup for saved_images/*
+filegroup(
+    name = "saved_images",
+    srcs = glob([
+        "**/*",
+        "saved_images/*",
+        "saved_images2/*",
+        "saved_images3/*",
+        "saved_images4/*",
+        "eros_500_500_45/*",
+        "eros_15_0_0_500_500_720/**/*",
+        "eros_15_45_0_500_500_720/**/*",
+    ]),
+)
+
+py_binary(
+    name = "example_optical_flow",
+    srcs = [
+        "example_optical_flow.py",
+    ],
+    data =
+        [
+            ":saved_images",
+            "@//freyr/examples/data:Eros.node",
+            "@//freyr/examples/data:eros_gaskell_200k_poly.ply",
             "@//freyr/examples/data:eros_gaskell_50k_poly.ply",
             "@//freyr/examples/data:eros_grayscale.jpg",
         ],
@@ -117,10 +157,12 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":blenderproc",
-        #        "@//freyr",
+        requirement("PySide6"),
+        requirement("PyQt6"),
         requirement("matplotlib"),
         requirement("screeninfo"),
         requirement("scipy"),
+        requirement("opencv-python"),
     ],
 )
 

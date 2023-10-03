@@ -1,107 +1,60 @@
 import blenderproc as bproc
+import cv2
 import numpy as np
 from PIL import Image
-import matplotlib.cm as cm
-import cv2
-from scipy.spatial.transform import Rotation as R
-import matplotlib.pyplot as plt
 
 
 #
 
-def initialize_scene():
+
+def initialize_scene(distance_au=1.5, illumination_angle=20):
     """
     Initializes the Blender scene with object and lighting setup.
     """
     bproc.init()
-    light = bproc.types.Light('SUN')
-    light.set_location([0, 50, 1000])
-    light.set_rotation_euler([-np.pi / 4, np.pi / 3, 0])
-    #    light.set_rotation_euler([-0.063, 0.6177, -0.1985])
-    light.set_energy(32)
+    light = bproc.types.Light("SUN")
+    # light.set_location([0, 50, 1000])
+    # # light.set_location([0, 50, 1000])
+    # light.set_rotation_euler([-np.pi / 4, np.pi / 3, 0])
+    # convert to W/km^2
+
+    light.set_rotation_euler([0, np.pi / 2, -np.deg2rad(illumination_angle)])
+    # light.set_rotation_euler([0, 0, 0])
+    # Solar constant at Earth (W/m^2)
+    original_energy = 1361 / 50
+    # original_energy = 1361 / 50
+    #
+    # # Calculate new energy based on new distance in AU
+    new_energy = original_energy * (1 / distance_au) ** 2
+
+    light.set_energy(new_energy)
 
 
-def setup_approach_camera_positions(positions=np.linspace(300, 5000, 10)):
-    rot = np.array([
-        [0, 0, 1],
-        [0, -1, 0],
-        [1, 0, 0]
-    ])
+def setup_approach_camera_positions(
+    position_mags=np.linspace(300, 5000, 10), approach_angle=0
+):
+    # Parametrize camera's position with declination and ascension
+    def get_camera_position(ascension, declination, radius):
+        x = radius * np.cos(declination) * np.cos(ascension)
+        y = radius * np.cos(declination) * np.sin(ascension)
+        z = radius * np.sin(declination)
+        return np.array([x, y, z])
 
-    # rotate 90 degs around x axis
-    # rot *= np.array([
-    #     [1, 0, 0],
-    #     [0, 0, -1],
-    #     [0, 1, 0]
-    # ])
-    # Adjusting the existing rotation matrix to have the "right" direction facing down
-    new_rot_adjusted = np.array([
-        [0, 0, 1],  # Forward stays the same
-        [1, 0, 0],  # New "right" is the old "up"
-        [0, 1, 0]  # New "up" is the negation of the old "right"
-    ])
-    rot = new_rot_adjusted
-
-    # rotate 90 degs around z axis
-    #     0 & -1 & 0 \ \
-    #         1 & 0 & 0 \ \
-    #         0 & 0 & 1
-    for pos in positions:
+    look_at = np.array([0, 0, 0])
+    for pos_mag in position_mags:
+        position = get_camera_position(0, np.deg2rad(approach_angle), pos_mag)
+        forward_vec = look_at - position
+        forward_vec /= np.linalg.norm(forward_vec)
+        pose_mat = bproc.camera.rotation_from_forward_vec(forward_vec, "Y")
         bproc.camera.add_camera_pose(
-            # bproc.math.build_transformation_mat(np.array([pos, 0, 0]), np.array([0, np.pi / 2, 0])))
-            bproc.math.build_transformation_mat(np.array([pos, 0, 0]), rot))
+            bproc.math.build_transformation_mat(
+                position,
+                pose_mat,
+            )
+        )
 
 
-# def setup_camera(cam_positions):
-#    """
-#    Sets up the camera orientation based on multiple positions and orientations.
-#
-#    Args:
-#        cam_positions (list): List of camera positions, each as a np.array.
-#        cam_orientations (list): List of camera orientations, each as a np.array in Euler angles (degrees).
-#    """
-#
-#    new_cam_pose = bproc.math.build_transformation_mat(new_cam_pos, new_cam_orient_rad)
-#    bproc.camera.add_camera_pose(new_cam_pose)
-
-#    if len(cam_positions) != len(cam_orientations):
-#        raise ValueError("Length of cam_positions must match length of cam_orientations.")
-#
-#    for i in range(len(cam_positions)):
-#        cam_pos = cam_positions[i]
-#        cam_orient = cam_orientations[i]
-#
-#        cam_orient_rad = np.radians(cam_orient)
-#        cam_pose = bproc.math.build_transformation_mat(cam_pos, cam_orient_rad)
-#        bproc.camera.add_camera_pose(cam_pose)
-
-
-# def setup_camera(initial_cam_pos, initial_cam_orient, axis, theta_deg):
-#    """
-#    Sets up the camera orientation based on initial position, initial orientation,
-#    axis of rotation, and rotation angle in degrees.
-#
-#    Args:
-#        initial_cam_pos (np.array): Initial camera position.
-#        initial_cam_orient (np.array): Initial camera orientation in Euler angles (degrees).
-#        axis (list): Axis of rotation.
-#        theta_deg (float): Angle of rotation in degrees.
-#    """
-#    initial_cam_orient_rad = np.radians(initial_cam_orient)
-#    initial_cam_pose = bproc.math.build_transformation_mat(initial_cam_pos, initial_cam_orient_rad)
-#    bproc.camera.add_camera_pose(initial_cam_pose)
-#
-#    r = R.from_euler('xyz', initial_cam_orient, degrees=True)
-#    r_new = R.from_rotvec(np.radians(theta_deg) * np.array(axis))
-#    new_cam_pos = r_new.apply(initial_cam_pos)
-#    r_combined = r * r_new
-#    new_cam_orient = r_combined.as_euler('xyz', degrees=True)
-#    new_cam_orient_rad = np.radians(new_cam_orient)
-#    new_cam_pose = bproc.math.build_transformation_mat(new_cam_pos, new_cam_orient_rad)
-#    bproc.camera.add_camera_pose(new_cam_pose)
-
-
-def render_scene():
+def render_scene(directory=None):
     """
     Renders the scene and returns the rendering data.
 
@@ -109,10 +62,20 @@ def render_scene():
         dict: Dictionary containing rendered data.
     """
     bproc.renderer.set_world_background([0, 0, 0])
-    bproc.renderer.enable_depth_output(activate_antialiasing=True)
-    bproc.renderer.enable_normals_output()
+    bproc.renderer.enable_depth_output(activate_antialiasing=True, output_dir=directory)
+    bproc.renderer.enable_diffuse_color_output(output_dir=directory)
+    bproc.renderer.enable_normals_output(output_dir=directory)
+    # Render the optical flow (forward and backward) for all frames
+    optical_flow = bproc.renderer.render_optical_flow(
+        get_backward_flow=True,
+        get_forward_flow=True,
+        blender_image_coordinate_style=False,
+    )
     bproc.renderer.set_noise_threshold(0.01)
-    return bproc.renderer.render()
+    data = bproc.renderer.render()
+    data["forward_flow"] = optical_flow["forward_flow"]
+    data["backward_flow"] = optical_flow["backward_flow"]
+    return data
 
 
 def visualize_rendering(data):
@@ -159,10 +122,12 @@ def visualize_rendering(data):
     # filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > 100]
 
     # Draw contours on the original image
-    result = cv2.drawContours(color_data, contours, -1, (0, 255, 0), 1)  # Drawing with green color
+    result = cv2.drawContours(
+        color_data, contours, -1, (0, 255, 0), 1
+    )  # Drawing with green color
 
     # Convert to PIL Image and show
-    result_img = Image.fromarray(result, 'RGB')
+    result_img = Image.fromarray(result, "RGB")
     result_img.show()
 
 
@@ -204,15 +169,19 @@ def generate_light_curve(image_arrays, time_points=None):
 
         # Calculate average brightness using the original grayscale image
         # for the pixels identified as "bright" in the thresholded image
-        avg_brightness = np.sum(gray_image[thresh_image == 255]) / num_bright_pixels if num_bright_pixels > 0 else 0
+        avg_brightness = (
+            np.sum(gray_image[thresh_image == 255]) / num_bright_pixels
+            if num_bright_pixels > 0
+            else 0
+        )
 
         # Append to brightness list
         brightness_values.append(avg_brightness)
 
     return {
-        'time_points': time_points,
-        'brightness_values': brightness_values,
-        'num_bright_pixels': num_bright_pixels_list  # Additional data that might be useful
+        "time_points": time_points,
+        "brightness_values": brightness_values,
+        "num_bright_pixels": num_bright_pixels_list,  # Additional data that might be useful
     }
 
 
@@ -242,127 +211,322 @@ def plot_quiver(ax, flow, spacing, margin=0, **kwargs):
 
 import bpy
 
+
 import os
 
 os.environ["OPENCV_IO_ENABLE_OPENEXR"] = "1"
 
+
+def rotation_matrix_x(angle):
+    """Generate a rotation matrix for rotation about the X-axis by `angle` radians."""
+    return np.array(
+        [
+            [1, 0, 0],
+            [0, np.cos(angle), -np.sin(angle)],
+            [0, np.sin(angle), np.cos(angle)],
+        ]
+    )
+
+
+def rotation_matrix_z(angle):
+    """Generate a rotation matrix for rotation about the Z-axis by `angle` radians."""
+    return np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0],
+            [np.sin(angle), np.cos(angle), 0],
+            [0, 0, 1],
+        ]
+    )
+
+
+import os
+
 if __name__ == "__main__":
+    # The best estimates for the J2000 right ascension and declination of the pole of Eros are α=11.3692±0.003° and δ=17.2273±0.006°. The rotation rate of Eros is 1639.38922±0.00015°/day, which gives a rotation period of 5.27025547 h. No wobble greater than 0.02° has been detected. Solar gravity gradient torques would introduce a wobble of at most 0.001°.
+
+    # get command line args for
+    # illumination_angle,
+    # true_anomaly,
+    # approach_angle,
+    # camera_distance1,
+    # camera_distance2,
+
+    import sys
+
+    illumination_angle = float(sys.argv[1])
+    true_anomaly = float(sys.argv[2])
+    approach_angle = float(sys.argv[3])
+    camera_distance1 = float(sys.argv[4])
+    camera_distance2 = float(sys.argv[5])
+    n_samples = int(sys.argv[6])
+
+    # example use:
+    # blenderproc run example_blenderproc_main.py -- 0 0 0 500 500
+    print("illumination_angle", illumination_angle)
+    print("true_anomaly", true_anomaly)
+    print("approach_angle", approach_angle)
+    print("camera_distance1", camera_distance1)
+    print("camera_distance2", camera_distance2)
+    print("n_samples", n_samples)
+
+    DIRECTORY_NAME = f"eros_{int(illumination_angle)}_{int(true_anomaly)}_{int(approach_angle)}_{int(camera_distance1)}_{int(camera_distance2)}_{n_samples}"
+
+    cmd = """
+         BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 15 0 0 500 500 720 && \
+         BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 15 45 0 500 500 720 && \
+         BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 15 90 0 500 500 720 && \
+         BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 45 0 0 500 500 720 && \
+         BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 45 45 0 500 500 720 && \
+         BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 45 90 0 500 500 720 && \
+        BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 75 0 0 500 500 720 && \
+        BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 75 45 0 500 500 720 && \
+        BLENDERPROC_BASE_PATH=./data blenderproc run example_blenderproc_main.py -- 75 90 0 500 500 720 
+    """
+
+
+    # if this exists, dont run
+    if os.path.exists(DIRECTORY_NAME):
+        print("directory exists, skipping")
+        sys.exit(0)
+
+    ra, dec = np.radians([11.3692, 17.2273])
+    sma = 1.458104
+    ecc = 0.222676
+    inc = np.radians(10.830)
+    argp = np.radians(178.796)
+    node = np.radians(304.300)
+    mass = 6.687e15
+
     t_eros = 5.27025547 * 60
-    t_end = t_eros * 3.0
-    n_samples = 100
+    t_end = t_eros * 1.0
+    # n_samples = 2
     f_sample = n_samples / t_end
     t_sample = 1 / f_sample
+    distance_au = 1.5
 
-    initialize_scene()
+    initialize_scene(distance_au, illumination_angle=illumination_angle)
 
-    BASE_PATH = "freyr/examples/data"
+    if "BLENDERPROC_BASE_PATH" in os.environ:
+        BASE_PATH = os.environ["BLENDERPROC_BASE_PATH"]
+    else:
+        BASE_PATH = "freyr/examples/data"
 
     # obj = bproc.loader.load_obj("Eros Gaskell 50k poly.ply")
-    obj = bproc.loader.load_obj(os.path.join(BASE_PATH, "eros_gaskell_50k_poly.ply"))
-    print(dir(obj[0]))
-    print(obj[0])
-    print(type(obj[0]))
+    obj = bproc.loader.load_obj(os.path.join(BASE_PATH, "eros_gaskell_200k_poly.ply"))[
+        0
+    ]
 
     th0 = np.pi / 2
 
-    # raise Exception("stop")
+    # α=11.3692±0.003° and δ=17.2273±0.006°
+    # Note: This is in J2000 coordinates, however we will treat it as the asteroid's ecliptic coordinates
 
+    # Given celestial longitude and latitude in degrees
+    lambda_deg = 90 - 11.3692
+    beta_deg = 90 - 17.2273
+
+    # Convert to radians
+    lambda_rad = np.radians(lambda_deg)
+    beta_rad = np.radians(beta_deg)
+
+    # Calculate the initial rotation matrix
+    planetocentric_to_inertial = np.dot(
+        rotation_matrix_z(lambda_rad), rotation_matrix_x(beta_rad)
+    )
+
+    planetocentric_to_inertial = np.linalg.inv(planetocentric_to_inertial)
+
+    # Set the initial rotation of the object to align its pole
+    obj.set_rotation_mat(planetocentric_to_inertial)
+
+    asteroid_poses = []
+
+    # Now proceed to rotate about the Z-axis
     for i in range(n_samples):
         th = 2 * np.pi / t_eros * t_sample * i + th0
-        obj[0].set_rotation_euler([0, 0, th], frame=i)
 
-    # Create Lambertian material
-    eros_texture = bpy.data.images.load(os.path.join(BASE_PATH, "eros_grayscale.jpg"))
-    obj[0].set_shading_mode("SMOOTH")
-    asteroid_material = obj[0].get_materials()[0]
+        # Generate the rotation matrix for this sample
+        rotation_matrix_sample = rotation_matrix_z(th)
 
-    # Create a new image texture node
-    asteroid_material.set_principled_shader_value("Base Color", eros_texture)
-    asteroid_material.set_principled_shader_value("Roughness", 0.4)
-    asteroid_material.set_principled_shader_value("Metallic", 0.0)
-    asteroid_material.set_displacement_from_principled_shader_value("Base Color", multiply_factor=1.0)
-    asteroid_material.set_principled_shader_value("Specular", 0.0)
+        # position
+        r = np.array([0, 0, 0])
 
-    print(asteroid_material)
-    print(dir(asteroid_material))
-    print(asteroid_material.nodes)
+        # Combine this with the initial rotation
+        final_rotation_matrix = np.dot(
+            planetocentric_to_inertial, rotation_matrix_sample
+        )
 
-    material_output_node = asteroid_material.nodes["Material Output"]
+        # phase rotation on z
+        final_rotation_matrix = np.dot(
+            rotation_matrix_z(np.radians(true_anomaly)), final_rotation_matrix
+        )
 
-    # raise Exception("stop")
-    text_coord_node = asteroid_material.nodes.new("ShaderNodeTexCoord")
+        # Set the final rotation matrix for this frame
+        obj.set_rotation_mat(final_rotation_matrix, frame=i)
+        obj.set_location(r, frame=i)
 
-    mapping_node = asteroid_material.nodes.new("ShaderNodeMapping")
-    mapping_node.vector_type = "POINT"
-    mapping_node.vector_type = "POINT"
-    mapping_node.inputs[3].default_value[0] = -1
-    mapping_node.inputs[2].default_value[2] = np.pi
+        # pose
+        pose = bproc.math.build_transformation_mat(r, final_rotation_matrix)
 
-    environment_texture_node = asteroid_material.nodes.new("ShaderNodeTexEnvironment")
-    environment_texture_node.image = bpy.data.images.load(os.path.join(BASE_PATH, "eros_grayscale.jpg"))
+        # save the asteroid pose
+        asteroid_poses.append(pose)
 
-    displacement_node = asteroid_material.nodes.new("ShaderNodeDisplacement")
-    displacement_node.inputs["Scale"].default_value = 1.0
-    displacement_node.inputs["Midlevel"].default_value = 0.5
+    texture_file = "eros_grayscale.jpg"  # Texture file name
+    texture_path = os.path.join(BASE_PATH, texture_file)
 
-    multiply_node = asteroid_material.nodes.new("ShaderNodeMath")
-    multiply_node.operation = "MULTIPLY"
-    multiply_node.inputs[1].default_value = 0.1
+    # Load texture
+    eros_texture = bpy.data.images.load(texture_path)
 
-    asteroid_material.links.new(text_coord_node.outputs["Object"], mapping_node.inputs["Vector"])
-    asteroid_material.links.new(mapping_node.outputs["Vector"], environment_texture_node.inputs["Vector"])
-    asteroid_material.links.new(environment_texture_node.outputs["Color"],
-                                asteroid_material.nodes["Principled BSDF"].inputs["Base Color"])
-    asteroid_material.links.new(environment_texture_node.outputs["Color"], multiply_node.inputs[0])
-    asteroid_material.links.new(multiply_node.outputs[0], displacement_node.inputs["Height"])
-    asteroid_material.links.new(displacement_node.outputs["Displacement"], material_output_node.inputs["Displacement"])
+    # Get object and set its shading mode
+    # obj.set_shading_mode("SMOOTH")
 
-    obj[0].set_material(0, asteroid_material)
+    # Get material
+    asteroid_material = obj.get_materials()[0]
 
-    # raise Exception("Stop here")
+    # Set principled shader values
+    def set_asteroid_material(material):
+        material.set_principled_shader_value("Subsurface", 0.0)
+        material.set_principled_shader_value("Metallic", 0.1)
+        material.set_principled_shader_value("Specular", 0.1)
+        material.set_principled_shader_value("Roughness", 0.9)
+        material.set_principled_shader_value("Anisotropic", 0.0)
+        material.set_principled_shader_value("Sheen", 0.0)
+        material.set_principled_shader_value("Clearcoat", 0.0)
+        material.set_principled_shader_value("IOR", 1.45)
 
-    # cam_0 = 35791
+    set_asteroid_material(asteroid_material)
+
+    # Set up nodes for mapping and displacement
+    def setup_nodes(material, albedo_value=0.25):
+        nodes = material.nodes
+        links = material.links
+
+        text_coord_node = nodes.new("ShaderNodeTexCoord")
+        mapping_node = nodes.new("ShaderNodeMapping")
+        environment_texture_node = nodes.new("ShaderNodeTexEnvironment")
+        displacement_node = nodes.new("ShaderNodeDisplacement")
+        multiply_for_displacement_node = nodes.new("ShaderNodeMath")
+        multiply_for_albedo_node = nodes.new("ShaderNodeMath")
+        material_output_node = nodes["Material Output"]
+
+        # Configure nodes
+        mapping_node.vector_type = "POINT"
+        mapping_node.inputs[3].default_value[0] = -1
+        mapping_node.inputs[2].default_value[2] = np.pi
+
+        environment_texture_node.image = bpy.data.images.load(texture_path)
+
+        displacement_node.inputs["Scale"].default_value = 1.0
+        displacement_node.inputs["Midlevel"].default_value = 0.5
+
+        multiply_for_displacement_node.operation = "MULTIPLY"
+        multiply_for_displacement_node.inputs[1].default_value = 0.05
+
+        multiply_for_albedo_node.operation = "MULTIPLY"
+        multiply_for_albedo_node.inputs[
+            1
+        ].default_value = albedo_value  # Effective Albedo
+
+        # Create links
+        links.new(text_coord_node.outputs["Object"], mapping_node.inputs["Vector"])
+        links.new(
+            mapping_node.outputs["Vector"],
+            environment_texture_node.inputs["Vector"],
+        )
+        links.new(
+            environment_texture_node.outputs["Color"],
+            multiply_for_albedo_node.inputs[0],
+        )
+        links.new(
+            multiply_for_albedo_node.outputs[0],
+            nodes["Principled BSDF"].inputs["Base Color"],
+        )
+        links.new(
+            environment_texture_node.outputs["Color"],
+            multiply_for_displacement_node.inputs[0],
+        )
+        links.new(
+            multiply_for_displacement_node.outputs[0],
+            displacement_node.inputs["Height"],
+        )
+        links.new(
+            displacement_node.outputs["Displacement"],
+            material_output_node.inputs["Displacement"],
+        )
+
+    setup_nodes(asteroid_material)
+
+    # Set the material
+    obj.set_material(0, asteroid_material)
     cam_0 = 357
     cam_1 = 354.240
-    cam_0 = 500
-    cam_1 = 500
-    initial_cam_pos = np.array([0, cam_0, 0])
-    initial_cam_orient = np.array([0, np.pi / 2, 0])
+    cam_0 = camera_distance1
+    cam_1 = camera_distance2
+
     axis = [0, 1, 0]
 
     #    setup_camera(initial_cam_pos, initial_cam_orient, axis, theta_deg)
-    setup_approach_camera_positions(np.linspace(cam_0, cam_1, n_samples))
+    setup_approach_camera_positions(
+        np.linspace(cam_0, cam_1, n_samples), approach_angle
+    )
 
-    bproc.camera.set_intrinsics_from_blender_params(lens=np.deg2rad(5.5), lens_unit="FOV", clip_start=0.0,
-                                                    clip_end=100000)
-    # bproc.camera.set_resolution(1020, 1020)
+    bproc.camera.set_intrinsics_from_blender_params(
+        lens=np.deg2rad(5.5), lens_unit="FOV", clip_start=0.0, clip_end=100000
+    )
+
     bproc.camera.set_resolution(1020, 1020)
-    # bproc.camera.set_resolution(500, 500)
-    #    bproc.camera.set_resolution(102, 102)
+
     import os
 
-    # def load_
-    # if "saved_images" not in os.listdir():
-    data = render_scene()
-    # else:
-    #     data = load_rendered_images()
-
     # Create a directory to save images if it doesn't exist
-    output_dir = "saved_images"
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+    if not os.path.exists(DIRECTORY_NAME):
+        os.makedirs(DIRECTORY_NAME)
 
-    for i in range(n_samples):  # Assuming n_frames is an integer specifying the number of frames
-        # Visualize Normals (or any other data you have)
-        normal_data = data["colors"][i]  # Replace with the appropriate data source
-        normal_data_normalized = (normal_data - np.min(normal_data)) / (np.max(normal_data) - np.min(normal_data))
-        normal_img = Image.fromarray((normal_data_normalized * 255).astype(np.uint8), 'RGB')
+    if not os.path.exists(os.path.join(DIRECTORY_NAME, "images")):
+        os.makedirs(os.path.join(DIRECTORY_NAME, "images"))
+
+    if not os.path.exists(os.path.join(DIRECTORY_NAME, "camera_poses")):
+        os.makedirs(os.path.join(DIRECTORY_NAME, "camera_poses"))
+
+    if not os.path.exists(os.path.join(DIRECTORY_NAME, "asteroid_poses")):
+        os.makedirs(os.path.join(DIRECTORY_NAME, "asteroid_poses"))
+
+    if not os.path.exists(os.path.join(DIRECTORY_NAME, "blenderproc_output")):
+        os.makedirs(os.path.join(DIRECTORY_NAME, "blenderproc_output"))
+
+    # if "saved_images" not in os.listdir():
+    data = render_scene(directory=None)
+
+    # write the data to a .hdf5 container
+    bproc.writer.write_hdf5(os.path.join(DIRECTORY_NAME, "blenderproc_output"), data)
+
+    # save the camera matrix
+    np.save(
+        os.path.join(DIRECTORY_NAME, "camera_intrinsics.npy"),
+        bproc.camera.get_intrinsics_as_K_matrix(),
+    )
+
+    for i in range(n_samples):
+        normal_data = data["colors"][i]
+
+        normal_img = Image.fromarray(normal_data.astype(np.uint8), "RGB")
 
         # Save the image
-        image_path = os.path.join(output_dir, f"normal_image_frame_{i}.png")
+        image_path = os.path.join(DIRECTORY_NAME, "images", f"image_frame_{i}.png")
         normal_img.save(image_path)
 
-    # print(data)
+        # save the camera pose
+        np.save(
+            os.path.join(DIRECTORY_NAME, "camera_poses", f"camera_pose_{i}.npy"),
+            bproc.camera.get_camera_pose(i),
+        )
+
+        # save the asteroid poses
+        np.save(
+            os.path.join(DIRECTORY_NAME, "asteroid_poses", f"asteroid_pose_{i}.npy"),
+            asteroid_poses[i],
+        )
+
 
 #     import numpy as np
 #     import matplotlib.pyplot as plt
