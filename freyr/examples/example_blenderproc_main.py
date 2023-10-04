@@ -17,7 +17,6 @@ def initialize_scene():
     light = bproc.types.Light('SUN')
     light.set_location([0, 50, 1000])
     light.set_rotation_euler([-np.pi / 4, np.pi / 3, 0])
-    #    light.set_rotation_euler([-0.063, 0.6177, -0.1985])
     light.set_energy(32)
 
 
@@ -28,12 +27,6 @@ def setup_approach_camera_positions(positions=np.linspace(300, 5000, 10)):
         [1, 0, 0]
     ])
 
-    # rotate 90 degs around x axis
-    # rot *= np.array([
-    #     [1, 0, 0],
-    #     [0, 0, -1],
-    #     [0, 1, 0]
-    # ])
     # Adjusting the existing rotation matrix to have the "right" direction facing down
     new_rot_adjusted = np.array([
         [0, 0, 1],  # Forward stays the same
@@ -41,11 +34,6 @@ def setup_approach_camera_positions(positions=np.linspace(300, 5000, 10)):
         [0, 1, 0]  # New "up" is the negation of the old "right"
     ])
     rot = new_rot_adjusted
-
-    # rotate 90 degs around z axis
-    #     0 & -1 & 0 \ \
-    #         1 & 0 & 0 \ \
-    #         0 & 0 & 1
     for pos in positions:
         bproc.camera.add_camera_pose(
             # bproc.math.build_transformation_mat(np.array([pos, 0, 0]), np.array([0, np.pi / 2, 0])))
@@ -335,10 +323,8 @@ if __name__ == "__main__":
 
     bproc.camera.set_intrinsics_from_blender_params(lens=np.deg2rad(5.5), lens_unit="FOV", clip_start=0.0,
                                                     clip_end=100000)
-    # bproc.camera.set_resolution(1020, 1020)
-    bproc.camera.set_resolution(1020, 1020)
-    # bproc.camera.set_resolution(500, 500)
-    #    bproc.camera.set_resolution(102, 102)
+    resolution = (1020, 1020)
+    bproc.camera.set_resolution(*resolution)
     import os
 
     # def load_
